@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define X first
+#define Y second
+
+int N, M;
+int dx[4]={-1,0,1,0}, dy[4]={0,-1,0,1};
+char board[601][601];
+bool vis[601][601];
+queue<pair<int,int>> Q;
+
+int main() {
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    int i, j;
+    cin >> N >> M;
+    
+    for(i=0;i<N;i++)
+    	for(j=0;j<M;j++){
+	    	cin >> board[i][j];
+	    	if(board[i][j]=='I'){
+	    		Q.push({i,j});
+	    		vis[i][j]=1;
+	    	}
+	    }
+    
+    int cnt=0;
+    while(!Q.empty()){
+    	auto cur=Q.front(); Q.pop();
+    	for(int dir=0;dir<4;dir++){
+	        int nx = cur.X + dx[dir];
+	        int ny = cur.Y + dy[dir];
+    		if(nx<0||nx>=N||ny<0||ny>=M)continue;
+    		if(vis[nx][ny]||board[nx][ny]=='X')continue;
+    		Q.push({nx,ny});
+    		vis[nx][ny]=1;
+    		if(board[nx][ny]=='P')cnt++;
+		}
+	}
+	
+	if(!cnt) cout << "TT"; // friends nowhere.
+	else cout << cnt;
+}
