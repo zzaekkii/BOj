@@ -10,12 +10,9 @@ int main(){
 	
 	int i,j,l=S.length();
 	
-	for(i=0;i<l;i++){
+	for(i=0;i<l;i++)
 		for(j=i;j<l;j++)
-			M.insert(S.substr(i,j));
-		for(j=0;j<=i;j++)
-			M.insert(S.substr(i,j));
-	}
+			M.insert(S.substr(i,j-i+1));
 	
 	cout << M.size();
 }
