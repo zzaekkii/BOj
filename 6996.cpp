@@ -9,11 +9,12 @@ int main() {
     
     while(N--){
     	cin >> A >> B;
+    	cout << A << " & " << B << " are ";
+    	
     	sort(A.begin(), A.end());
     	sort(B.begin(), B.end());
     	
-    	cout << A << " & " << B << " are ";
-    	if(strcmp(A,B)) cout << "NOT ";
+    	if(A.compare(B)!=0) cout << "NOT ";
     	cout << "anagrams.\n"; 
 	}    
 }
