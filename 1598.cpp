@@ -1,16 +1,15 @@
-#include <iostream>
-#include <math.h>
+#include <bits/stdc++.h>
 using namespace std;
-int main(void)
-{
-	int x, y, xw, yw, xh, yh;
-	cin >> x >> y;
+int X, Y, xw, yw, xh, yh;
 
-	xw = (x - 1) / 4;
-	yw = (y - 1) / 4;
+int main(){
+	cin >> X >> Y;
 
-	xh = (x-1) % 4;
-	yh = (y-1) % 4;
+	xw = (X - 1) / 4;
+	yw = (Y - 1) / 4;
+
+	xh = (X-1) % 4;
+	yh = (Y-1) % 4;
 
 	cout << abs(xw - yw) + abs(xh - yh);
 }
