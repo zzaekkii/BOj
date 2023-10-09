@@ -12,25 +12,22 @@ int main(){
     
     while(Q--){
         cin >> S >> E;
-        vector<int> V;
-        int Vcount[100001]={0,};
+        unordered_map<int, int> V;
         
         for(int i=S;i<=E;i++)
-            if(find(V.begin(),V.end(),arr[i])==V.end()){
-                V.push_back(arr[i]);
-                Vcount[find(V.begin(),V.end(),arr[i])-V.begin()]++;
-            }
-            else Vcount[find(V.begin(),V.end(),arr[i])-V.begin()]++;
+            if(V.find(arr[i])==V.end())
+                V.insert({arr[i],1});
+            else V[arr[i]]++;
         
         int mmax=0;
-        int ans=V[0];
+        auto ans=V.begin();
         
-        for(int i=0;i<V.size();i++)
-            if(Vcount[i]>mmax){
-                mmax=Vcount[i];
-                ans=V[i];
+        for(auto i=V.begin();i!=V.end();i++)
+            if(i->second>=mmax){
+                mmax=i->second;
+                ans=i;
             }
         
-        cout << ans << '\n';
+        cout << ans->first << '\n';
     }
 }
