@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <string.h>
 
@@ -27,3 +28,4 @@ int main() {
 		puts(!strncmp(P, S, x) && f ? "DA" : "NE");
 	}
 }
+*/
