@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 int N, M, P, L;
-
-int arr[100][100];
+int arr[100];
 int pos[100];
 int ans;
 
@@ -11,16 +10,20 @@ int main(){
     cin >> N >> M;
     
     for(int i=0;i<N;i++){
+    	memset(arr,0,100);
     	cin >> P >> L;
     	for(int j=0;j<P;j++)
-    		cin >> arr[i][j];
+    		cin >> arr[j];
     	sort(arr,arr+P);
     	if(L>P)pos[i]=1;
-    	else pos[i]=arr[P-1-L];
+    	else pos[i]=arr[P-L];
 	}
 	sort(pos,pos+N);
-	for(int i=0;i<N&&L>0;i++){
-		
+	
+	for(int i=0;i<N;i++){
+		M-=pos[i];
+		if(M<0)break;
+		ans++;
 	}
-		
+	cout << ans;
 }
