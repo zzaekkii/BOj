@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int main() {
 	int i, r, n;
 	char s[81];
