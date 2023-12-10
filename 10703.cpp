@@ -10,12 +10,15 @@ int main(){
 		cin >> board[i];
 	
 	for(int j=0;j<S;j++){
-		int cnt=0;
+		int gr=0,mt=0;
 		for(int i=R-1;i>=0;i--){
-			if(board[i][j]=='X')break;
-			if(board[i][j]=='.')cnt++;
+			if(board[i][j]=='X'){
+				mt=i+1;
+				break;
+			}
+			if(board[i][j]=='#')gr=i+1;
 		}
-		if(m>cnt)m=cnt;
+		if(gr&&mt&&(m>(gr-mt-1)))m=gr-mt-1;
 	}
 	
 	for(int i=R-1;m&&(i>=0);i--)
@@ -24,7 +27,7 @@ int main(){
 				board[i+m][j]='X';
 				board[i][j]='.';
 			}
-		}		
+		}
 	
 	for(int i=0;i<R;i++)
 		cout << board[i] << '\n';
