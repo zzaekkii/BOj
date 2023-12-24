@@ -1,28 +1,33 @@
-#include <stdio.h>
-#include <string.h>
-
+#include <bits/stdc++.h>
+using namespace std;
 int N;
-char *ret;
-char S[101];
-int vis[101];
-char A[101];
+string S;
+string T;
+bool dp[101];
+vector<string> A;
 
 int main(){
-    gets(S);
-    int l=strlen(S);
-    scanf("%d ",&N);
-    while(N--){
-        gets(A);
-        int end=strlen(A);
-        ret=strstr(S,A);
-        while(ret!=NULL){
-            int st=ret-S;
-            for(int i=st;i<st+end;i++)vis[i]=1;
-            ret=strstr(ret+end,A);
-        }
-    }
-    int f=1;
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> S >> N;
+    int l=S.length();
+    
+    for(int i=0;i<N;i++){
+    	cin >> T;
+    	A.push_back(T);
+	}
+	
     for(int i=0;i<l;i++)
-        if(!vis[i])f=0;
-    puts(f?"1":"0");
+    	if(!i||dp[i]){
+    		for(int j=0;j<N;j++){
+    			bool corr=1;
+    			int lj=A[j].length();
+    			for(int k=0;k<lj;k++)
+    				if(A[j][k]!=S[i+k]){
+    					corr=0;
+    					break;
+					}
+				if(corr)dp[i+lj]=1;
+			}
+		}
+    cout << dp[l];
 }
