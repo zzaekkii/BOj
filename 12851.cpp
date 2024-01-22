@@ -1,40 +1,52 @@
 #include <bits/stdc++.h>
+#define MAX 100'001
 using namespace std;
-#define X first
 
-int N, K;
-int vis[100001];
-int cnt;
+int N,K;
+int vis[MAX];
+int dr[3]={-1,1};
 queue<int> Q;
 
-void check(int k){
-	if(k==N){
-		cnt++;
-		return;
-	}
-   	if(k!=0&&vis[k-1]==vis[k]-1) check(k-1);
-   	if(k!=100000&&vis[k+1]==vis[k]-1) check(k+1);
-   	if(!(k%2)&&k!=0&&vis[k/2]==vis[k]-1) check(k/2);
-   	return;
-}
-
-int main() {
-    ios::sync_with_stdio(0); cin.tie(0);
-    cin >> N >> K;
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> K;
     
-    fill(vis,vis+100001,-1);
-    vis[N]=0;
-    Q.push(N);
-    
-    while (vis[K]==-1) {
-        auto cur = Q.front(); Q.pop();
-        for(int mv:{cur-1,cur+1,cur*2}){
-        	if(mv<0||mv>100000)continue;
-        	if(vis[mv]!=-1)continue;
-        	vis[mv]=vis[cur]+1;
-        	Q.push(mv);
-		}
+    if(N==K){
+        cout << "0\n1";
+        return 0;
     }
-    check(K);
-    cout << vis[K] << '\n' << cnt;
+	
+	fill(vis,vis+MAX,MAX);
+	vis[N]=0;
+	Q.push(N);
+	
+	int cnt=0,min=MAX,ans=0;
+	
+	while(!Q.empty()){
+		int cur=Q.front(); Q.pop();
+		dr[2]=cur;
+		for(int i=0;i<3;i++){
+			int nxt=cur+dr[i];
+			cnt=vis[cur];
+			
+			if(nxt<0||nxt>=MAX||vis[nxt]>min)continue;
+			// 마지막 조건은 찾고 이후 탐색 고려.
+			
+			if(nxt==K){
+				vis[nxt]=cnt+1;
+				if(min>vis[nxt]){ // 젤 적은 길 첨 발견. 
+					min=vis[nxt];
+					ans=1; // ans도 새로 카운트. 
+				}
+				else if(min==vis[nxt])
+					ans++;
+			}
+			else if(vis[nxt]>=cnt+1){
+				vis[nxt]=cnt+1;
+				Q.push(nxt);
+			}
+		}
+	}
+	
+	cout << vis[K] << '\n' << ans;
 }
