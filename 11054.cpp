@@ -65,5 +65,6 @@ int main(){
 		int lis_r=LIS_R(i);
 		mx=max(mx,lis_l+lis_r-1);
 	}
+	
 	cout << mx;
 }
