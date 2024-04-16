@@ -2,7 +2,7 @@
 using namespace std;
 
 int N;
-int A[2001];
+int A[2000];
 int ans;
 
 int main(){
