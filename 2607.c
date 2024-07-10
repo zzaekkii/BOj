@@ -12,16 +12,16 @@ int main(){
     int l=strlen(S);
     for(int i=0;S[i];i++)
         alph[S[i]-65]++;
-    
+
     for(int i=1;i<N;i++){
         scanf("%s",S);
         int cl=strlen(S);
-        
+
         for(int j=0;j<26;j++)
             tmp[j]=0;
         for(int j=0;j<cl;j++)
             tmp[S[j]-65]++;
-        
+
         _Bool f=1;
         int mn=0,pl=0;
         for(int j=0;j<26;j++){
@@ -31,7 +31,7 @@ int main(){
                 else f=0;
             }
         }
-        
+
         if(f){
             if(l==cl&&!mn&&!pl)ans++;
             else if(l==cl&&mn==1&&pl==1)ans++;
