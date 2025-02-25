@@ -16,23 +16,15 @@ int main(){
 		sort(L,L+N);
 		
 		X*=10'000'000; // 나노미터화.
-		int L1=-1, L2=-1;
 		int st=0, en=N-1;
 		
 		while(st<en){
-            int sum=L[st]+L[en];
-            
-            if(sum==X){
-                if(abs(L[st]-L[en])>=abs(L2-L1))
-                    L1=L[st],L2=L[en];
-                st++;
-                en--;
-            }
-            else if(sum<X)st++;
-            else en--;
+            if(L[st]+L[en]>X)en--;
+            else if(L[st]+L[en]<X)st++;
+            else break;
         }
 		
-		if(L1==-1)cout << "danger\n";
-		else cout << "yes " << L1 << ' ' << L2 << '\n';
+		if(st<en) cout << "yes " << L[st] << ' ' << L[en] << '\n';
+		else cout << "danger\n";
 	}
 }
