@@ -11,8 +11,9 @@ int main(){
 	cin >> A >> B >> D;
 	
 	for(int i=2;i*i<=B;i++)
-		for(int j=i+i;j<=B;j+=i)
-			notPrime[j]=1;
+		if(!notPrime[i])
+			for(int j=i+i;j<=B;j+=i)
+				notPrime[j]=1;
 	
 	for(int i=A;i<=B;i++)
 		if(!notPrime[i])primes.emplace_back(i);
