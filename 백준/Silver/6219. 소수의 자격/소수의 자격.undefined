@@ -1,0 +1,30 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int A, B, D; // A 이상 B 이하의 소수 중 D를 포함하는 수 찾기.
+vector<int> primes;
+bool notPrime[4'000'001]={1,1}; // 소수는 0. 
+int ans;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> A >> B >> D;
+	
+	for(int i=2;i<=B;i++)
+		for(int j=i+i;j<=B;j+=i)
+			notPrime[j]=1;
+	
+	for(int i=A;i<=B;i++)
+		if(!notPrime[i])primes.emplace_back(i);
+	
+	for(auto a: primes)
+		while(a){
+			if((a%10)==D){
+				ans++;
+				break;
+			}
+			a/=10;
+		}		
+	
+	cout << ans;
+}
