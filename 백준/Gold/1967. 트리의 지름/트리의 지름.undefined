@@ -14,7 +14,7 @@ int maxDist, farthestStart; // 긴 길이, 가장 긴 시작 리프노드.
 void Dfs(int node,int dist){
 	visited[node]=1;
 	
-	if(dist>=maxDist){
+	if(dist>maxDist){
 		maxDist=dist;
 		farthestStart=node;
 	}
@@ -22,16 +22,6 @@ void Dfs(int node,int dist){
 	for(auto a: tree[node])
 		if(!visited[a.first])
 			Dfs(a.first,dist+a.second);
-}
-
-void FindMaxDist(){
-	// 시작점 찾기.
-	Dfs(1,0);
-	
-	// 긴 지름 찾기.
-	memset(visited,0,sizeof(visited));
-	maxDist=0;
-	Dfs(farthestStart,0);
 }
 
 int main(){
@@ -45,7 +35,12 @@ int main(){
 		tree[B].push_back({A,W});
 	}
 	
-	FindMaxDist();
+	// 시작점 찾기.
+	Dfs(1,0);
+	
+	// 긴 지름 찾기.
+	memset(visited,0,sizeof(visited));
+	Dfs(farthestStart,0);
 	
 	cout << maxDist;		
 }
