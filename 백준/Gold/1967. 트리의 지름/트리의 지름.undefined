@@ -1,0 +1,51 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int N; // 노드 N개.
+int A, B, W; // A와 B는 W만큼 길이로 연결돼있음.
+
+bool visited[10001];
+vector<pair<int,int>> tree[10001];
+
+int maxDist, farthestStart; // 긴 길이, 가장 긴 시작 리프노드.
+
+void Dfs(int node,int dist){
+	visited[node]=1;
+	
+	if(dist>=maxDist){
+		maxDist=dist;
+		farthestStart=node;
+	}
+	
+	for(auto a: tree[node])
+		if(!visited[a.first])
+			Dfs(a.first,dist+a.second);
+}
+
+void FindMaxDist(){
+	// 시작점 찾기.
+	Dfs(1,0);
+	
+	// 긴 지름 찾기.
+	memset(visited,0,sizeof(visited));
+	maxDist=0;
+	Dfs(farthestStart,0);
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	for(int i=1;i<N;i++){
+		cin >> A >> B >> W;
+		
+		tree[A].push_back({B,W});
+		tree[B].push_back({A,W});
+	}
+	
+	FindMaxDist();
+	
+	cout << maxDist;		
+}
