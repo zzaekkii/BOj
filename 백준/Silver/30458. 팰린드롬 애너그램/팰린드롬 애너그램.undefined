@@ -1,0 +1,28 @@
+#include <iostream>
+using namespace std;
+
+int N;
+string S;
+int alph[26];
+
+char pivot;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> S;
+	
+	for(int i=0;i<N;i++)
+		alph[S[i]-97]++;
+
+	if(N%2)pivot=S[N/2];
+	
+	bool flag=1;
+	for(int i=0;i<26;i++)
+		if(alph[i]%2){
+			if(N%2&&pivot==i+97)continue;
+			flag=0;
+		}
+	
+	if(flag)cout << "Yes";
+	else cout << "No";
+}
