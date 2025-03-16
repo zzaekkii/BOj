@@ -1,0 +1,53 @@
+#include <iostream>
+using namespace std;
+
+long long N, ans, gap=0x7f7f7f7f7f7f;
+int lenN;
+bool used[10];
+
+int getLength(long long x){
+	int cnt=0;
+	
+	// x는 1이상 자연수임. 
+	while(x>0){
+		x/=10;
+		cnt++;
+	}
+	
+	return cnt;
+}
+
+void Dfs(long long cur,int lenCur){
+	if(lenN==lenCur){
+		if(abs(N-cur)<gap){
+			ans=cur;
+			gap=abs(N-cur);
+		}
+		return;
+	}
+	
+	for(int i=0;i<10;i++){
+		if(!used[i]){
+			used[i]=1;
+			cur=cur*10+i;
+			
+			Dfs(cur,lenCur+1);
+			
+			cur=(cur-i)/10;
+			used[i]=0;
+		}
+	}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	if(N>=9876543210)
+		cout << 9876543210;
+	else{
+		lenN=getLength(N);
+		Dfs(0,0);
+		cout << ans;
+	}
+}
