@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+#define X first
+#define Y second
+using namespace std;
+
+int N, M; // 판 크기 N * M.
+string board[101];
+bool visited[101][101];
+
+// 상하좌우 + 대각 8방향 탐색.
+int dx[]={-1,0,1,1,1,0,-1,-1},dy[]={-1,-1,-1,0,1,1,1,0};
+
+queue<pair<int,int>> Q; 
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	
+	while(1){
+		cin >> N >> M;
+		
+		// 탈출 조건 확인. 
+		if(!N&&!M)break;
+		
+		// 방문 조건 초기화. 
+		memset(visited,0,sizeof(visited));
+		
+		// 데이터 입력. 
+		for(int i=0;i<N;i++)
+			cin >> board[i];
+		
+		// 석유 구역 수. 
+		int cnt=0;
+		
+		// 석유 구역 카운트. 
+		for(int i=0;i<N;i++)
+			for(int j=0;j<M;j++)
+				if(board[i][j]=='@'&&!visited[i][j]){
+					Q.push({i,j});
+					visited[i][j]=1;
+					
+					while(!Q.empty()){
+						auto cur=Q.front(); Q.pop();
+						
+						for(int dir=0;dir<8;dir++){
+							int nx=cur.X+dx[dir];
+							int ny=cur.Y+dy[dir];
+							
+							if(nx>=0&&nx<N&&ny>=0&&ny<M){
+								if(board[nx][ny]=='@'&&!visited[nx][ny]){
+									Q.push({nx,ny});
+									visited[nx][ny]=1;
+								}
+							}
+						}
+					}
+					
+					cnt++;
+				}
+		
+		cout << cnt << '\n';
+	}
+}
