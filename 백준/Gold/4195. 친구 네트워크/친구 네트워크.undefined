@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int T, F;
+string A, B;
+		
+unordered_map<string,string> friendship;
+unordered_map<string,int> cnt;
+
+string Find(string x){
+	if(friendship[x]==x)
+		return x;
+	return friendship[x]=Find(friendship[x]);
+}
+
+void Union(string x, string y){
+	string rootX=Find(x);
+	string rootY=Find(y);
+	
+	if(rootX!=rootY){
+		friendship[rootY]=rootX;
+		cnt[rootX]+=cnt[rootY];
+	}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> T;
+	
+	while(T--){
+		cin >> F;
+		
+		friendship.clear();
+		cnt.clear();
+		
+		for(int i=0;i<F;i++){
+			cin >> A >> B;
+			
+			if(friendship.find(A)==friendship.end()){
+				friendship[A]=A;
+				cnt[A]=1;
+			}
+			
+			if(friendship.find(B)==friendship.end()){
+				friendship[B]=B;
+				cnt[B]=1;
+			}
+			
+			Union(A,B);
+			
+			cout << cnt[Find(A)] << '\n';
+		}
+	}
+}
