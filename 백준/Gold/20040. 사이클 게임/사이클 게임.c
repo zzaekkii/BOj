@@ -4,6 +4,7 @@
 int N, M;
 int A, B;
 int root[500001];
+int rank[500001];
 int ans;
 
 int Find(int x) {
@@ -15,8 +16,16 @@ void Union(int x, int y) {
 	int rootX = root[x];
 	int rootY = root[y];
 
-	if (rootX != rootY)
-		root[rootY] = rootX;
+	if (rootX != rootY) {
+		if (rank[rootX] > rank[rootY]) {
+			root[rootY] = rootX;
+		} else if (rank[rootX] < rank[rootY]) {
+			root[rootX] = rootY;
+		} else {
+			root[rootY] = rootX;
+			rank[rootX]++;
+		}
+	}
 }
 
 int main() {
