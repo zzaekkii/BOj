@@ -1,14 +1,13 @@
 #include <stdio.h>
 
 int N, M, K, A, B;
-int cost[10001];
 
-int root[10001];
+int cost[10001];
 int total;
 
 int Find(int x) {
-	if (root[x] == x)return x;
-	return root[x] = Find(root[x]);
+	if (cost[x] < 0)return x;
+	return cost[x] = Find(cost[x]);
 }
 
 void Union(int x, int y) {
@@ -16,9 +15,8 @@ void Union(int x, int y) {
 	int rootY = Find(y);
 
 	if (rootX != rootY) {
-		root[rootY] = rootX;
-		if (cost[rootX] > cost[rootY])cost[rootX] = cost[rootY];
-		cost[rootY] = 0;
+		if (cost[rootX] < cost[rootY])cost[rootX] = cost[rootY];
+		cost[rootY] = rootX;
 	}
 }
 
@@ -27,7 +25,7 @@ int main() {
 
 	for (int i = 1; i <= N; i++) {
 		scanf("%d", &cost[i]);
-		root[i] = i;
+		cost[i] *= -1;
 	}
 
 	while (M--) {
@@ -36,7 +34,8 @@ int main() {
 	}
 
 	for (int i = 1; i <= N; i++)
-		total += cost[i];
+		if(cost[i]<0)
+			total += -cost[i];
 
 	if (total > K)puts("Oh no");
 	else printf("%d", total);
