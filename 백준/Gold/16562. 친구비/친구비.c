@@ -25,10 +25,10 @@ void Union(int x, int y) {
 int main() {
 	scanf("%d %d %d", &N, &M, &K);
 
-	for (int i = 1; i <= N; i++)root[i] = i;
-
-	for (int i = 1; i <= N; i++)
+	for (int i = 1; i <= N; i++) {
 		scanf("%d", &cost[i]);
+		root[i] = i;
+	}
 
 	while (M--) {
 		scanf("%d %d", &A, &B);
