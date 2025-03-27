@@ -7,9 +7,13 @@ typedef struct Barracks {
 int T, N;
 Barracks B[3001];
 int root[3001];
+int rank[3001];
 
 void Init(int x) {
-	for (int i = 0; i <= x; i++)root[i] = i;
+	for (int i = 0; i <= x; i++) {
+        root[i] = i;
+        rank[i] = 0;
+    }
 }
 
 int Find(int x) {
@@ -21,8 +25,14 @@ void Union(int x, int y) {
 	int rootX = Find(x);
 	int rootY = Find(y);
 
-	if (rootX != rootY)
-		root[rootY] = rootX;
+	if (rootX != rootY) {
+        if (rank[rootX] < rank[rootY])
+            root[rootX] = rootY;
+		else {
+            root[rootY] = rootX;
+            if (rank[rootX] == rank[rootY]) rank[rootX]++;
+        }
+    }
 }
 
 _Bool isAbut(Barracks A, Barracks B) {
