@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Barracks {
+	int x, y, r; // 좌표 + 통신범위. 
+};
+
+int T, N;
+Barracks B[3001];
+int root[3001];
+int rrank[3001];
+
+void Init(int x) {
+	for (int i = 0; i <= x; i++) {
+        root[i] = i;
+        rrank[i] = 0;
+    }
+}
+
+int Find(int x) {
+	if (root[x] == x)return x;
+	return root[x] = Find(root[x]);
+}
+
+void Union(int x, int y) {
+	int rootX = Find(x);
+	int rootY = Find(y);
+
+	if (rootX != rootY) {
+        if (rrank[rootX] < rrank[rootY])
+            root[rootX] = rootY;
+		else {
+            root[rootY] = rootX;
+            if (rrank[rootX] == rrank[rootY]) rrank[rootX]++;
+        }
+    }
+}
+
+_Bool isAbut(Barracks A, Barracks B) {
+	int dx = A.x - B.x;
+	int dy = A.y - B.y;
+
+	int distance = dx * dx + dy * dy;
+	int radiusSum = A.r + B.r;
+	return distance <= radiusSum * radiusSum;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+	cin >> T;
+
+	while (T--) {
+		cin >> N;
+
+		Init(N);
+
+		for (int i = 0; i < N; i++)
+			cin >> B[i].x >> B[i].y >> B[i].r;
+
+		for (int i = 0; i < N; i++)
+			for (int j = i + 1; j < N; j++)
+				if (isAbut(B[i], B[j]))
+					Union(i, j);
+
+		int cnt = 0;
+		_Bool visited[3001] = { 0 };
+		for (int i = 0; i < N; i++) {
+			int headquarter = Find(i);
+
+			if (!visited[headquarter]) {
+				visited[headquarter] = 1;
+				cnt++;
+			}
+		}
+
+		cout << cnt << '\n';
+	}
+}
