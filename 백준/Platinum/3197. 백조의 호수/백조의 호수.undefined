@@ -1,0 +1,94 @@
+// 3197번 백조의 호수 - 플래티넘5 / BFS, 유니온파인드 
+#include <bits/stdc++.h>
+#define X first
+#define Y second
+using namespace std;
+
+int dx[]={-1,0,1,0},dy[]={0,1,0,-1};
+
+int R, C;
+string board[1501];
+
+int root[2250001]; // 백조 같은 집합인지 판별.
+bool vis[1501][1501];
+
+deque<pair<int,int>> waterQ;
+vector<pair<int,int>> swan; // 백조 위치 저장.
+
+int day; // 백조 상봉 가능일.
+
+int Idx(int x, int y) {
+    return x*C + y;
+}
+
+int Find(int x){
+	if(root[x]==x)return x;
+	return root[x]=Find(root[x]);
+}
+
+void Union(int x, int y){
+	int rootX=Find(x);
+	int rootY=Find(y);
+	
+	if(rootX!=rootY)
+        root[rootY]=rootX;
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> R >> C;
+	
+	for(int i=0;i<R;i++)
+		for(int j=0;j<C;j++)
+			root[Idx(i,j)]=Idx(i,j);
+
+	// 호수 상태 입력. 
+	for(int i=0;i<R;i++)
+		cin >> board[i];
+	
+	// 호수에 뭐있나 탐색.
+	for(int i=0;i<R;i++)
+		for(int j=0;j<C;j++){
+			if(board[i][j]!='X'){
+				if(board[i][j]=='L')swan.push_back({i,j});
+				waterQ.push_back({i,j});
+				vis[i][j]=1;
+			}
+		}
+	
+	while(!waterQ.empty()){
+		// 물끼리 합집합.
+		for(auto cur: waterQ)
+			for(int dir=0;dir<4;dir++){
+				int nx=cur.X+dx[dir];
+				int ny=cur.Y+dy[dir];
+				
+				if(nx>=0&&nx<R&&ny>=0&&ny<C&&vis[nx][ny])
+					Union(Idx(cur.X,cur.Y),Idx(nx,ny));
+			}
+			
+		
+		// 백조 상봉하나 확인.		
+		if(Find(Idx(swan[0].X,swan[0].Y))==Find(Idx(swan[1].X,swan[1].Y)))break;
+		day++;
+		
+		
+		// 빙판 녹이기. 
+		for(int i=waterQ.size();i>0;i--){
+			auto cur=waterQ.front(); waterQ.pop_front();
+			
+			for(int dir=0;dir<4;dir++){
+				int nx=cur.X+dx[dir];
+				int ny=cur.Y+dy[dir];
+				
+				// 빙하만나면 해동 + 해동된 물 저장. 
+				if(nx>=0&&nx<R&&ny>=0&&ny<C&&!vis[nx][ny]){
+					vis[nx][ny]=1;
+					waterQ.push_back({nx,ny});
+				}
+			}
+		}
+	}
+	
+	cout << day;
+}
