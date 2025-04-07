@@ -1,0 +1,42 @@
+// 16173번 점프왕 쩰리 (Small) - 실버4 / 구현 
+#include <bits/stdc++.h>
+#define X first
+#define Y second
+using namespace std;
+
+int N;
+int board[3][3];
+bool vis[3][3];
+
+queue<pair<int,int>> Q;
+bool flag;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	for(int i=0;i<N;i++)
+		for(int j=0;j<N;j++)
+			cin >> board[i][j];
+	
+	Q.push({0,0});
+	while(!Q.empty()){
+		auto cur=Q.front(); Q.pop();
+		vis[cur.X][cur.Y]=1;
+		
+		int jmp=board[cur.X][cur.Y];
+		
+		if(jmp==-1){
+			flag=1;
+			break;
+		}
+		
+		int nx=cur.X+jmp;
+		int ny=cur.Y+jmp;
+		if(nx>0&&nx<N&&!vis[nx][cur.Y])Q.push({nx,cur.Y});
+		if(ny>0&&ny<N&&!vis[cur.X][ny])Q.push({cur.X,ny});
+	}
+	
+	if(flag)cout << "HaruHaru";
+	else cout << "Hing";
+}
