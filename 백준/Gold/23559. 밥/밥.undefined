@@ -1,0 +1,39 @@
+// 23559번 밥 - 골드5 / 그리디ㅁ 
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Meal{
+	int A, B; // 5천원, 천원.
+};
+
+bool cmp(Meal &x, Meal &y){
+	int gapX=x.A-x.B;
+	int gapY=y.A-y.B;
+	
+	if(gapX!=gapY) return gapX>gapY;
+	return x.A>y.A;
+}
+
+int N, X, cost, taste;
+Meal m[100001];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> X;
+	
+	for(int i=0;i<N;i++)
+		cin >> m[i].A >> m[i].B;
+	
+	sort(m,m+N,cmp);
+	
+	cost=1000*N; // 최소 천원짜리는 먹게 됨.
+	for(int i=0;i<N;i++){
+		if(X>=cost+4000&&m[i].A>m[i].B){
+			taste+=m[i].A;
+			cost+=4000;
+		}
+		else taste+=m[i].B;
+	}
+	
+	cout << taste;
+}
