@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;        
+string S;
+long long arr[1000001];
+
+// 아니 이거 문제 조건 누락있음 ㅡ ㅡ 
+// 입력들어오는 정수 앞에 0000있으면 그것도 포함해야하는 게 25% 케이스인듯.
+int main(){    
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> N;
+    
+    for(int i = 0; i < N; i++){
+        cin >> S;
+        reverse(S.begin(), S.end());      
+        arr[i] = stol(S);  
+    }
+    
+    sort(arr, arr + N);
+    
+    for(int i = 0 ; i < N; i++) 
+        cout << arr[i] << "\n";
+}
+
+/*
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+typedef long long ll;
+
+int N;
+ll T;
+ll arr[1000001];
+
+ll cmp(ll* a, ll* b) {
+	return *a - *b;
+}
+
+ll reverse(ll x) {
+	ll tmp = 0;
+
+	while (x > 0) {
+		tmp = tmp * 10 + x % 10;
+		x /= 10;
+	}
+
+	return tmp;
+}
+
+int main() {
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++) {
+		scanf("%lld", &T);
+		arr[i] = reverse(T);
+	}
+
+	qsort(arr, N, sizeof(ll), cmp);
+
+	for (int i = 0; i < N; i++)
+		printf("%lld\n", arr[i]);
+}
+*/
