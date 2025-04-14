@@ -1,0 +1,24 @@
+// 4368번 Babelfish - 실버4 / 해시맵 
+#include <bits/stdc++.h>
+using namespace std;
+
+unordered_map<string, string> M;
+string inco, mean, S;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	
+	while(getline(cin, mean)){
+		if(mean.empty())break;
+		
+        stringstream ss(mean);
+        ss >> mean >> inco;
+        
+		M.insert({inco,mean});
+	}
+	
+	while(getline(cin, S)){
+		if(M.find(S)==M.end()) cout << "eh\n";
+		else cout << M[S] << '\n';
+	}
+}
