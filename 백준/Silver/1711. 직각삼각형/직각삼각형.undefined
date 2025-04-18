@@ -1,0 +1,67 @@
+// 1711번 직각삼각형 - 실버1 / 기하학, 피타고라스 
+#include <bits/stdc++.h>
+using namespace std;
+using Point=pair<int, int>;
+using Dir=array<int, 2>;
+
+int N;
+
+struct ArrayHash{
+    size_t operator()(const Dir& arr) const{
+        return hash<long long>()(((long long)arr[0]<<32)|(unsigned int)arr[1]);
+    }
+};
+
+int gcd(int a, int b){
+    return b?gcd(b,a%b):a;
+}
+
+Dir normalize(int dx, int dy){
+    if(!dx&&!dy)return {0, 0};
+    if(!dx)return {0, 1};
+    if(!dy)return {1, 0};
+    
+    int g=gcd(abs(dx),abs(dy));
+    dx/=g,dy/=g;
+    
+    if(dx<0)dx=-dx,dy=-dy;
+    else if(!dx&&dy<0)dy=-dy;
+    
+    return {dx, dy};
+}
+
+long long countRightTriangles(const vector<Point>& points){
+    int l=points.size();
+    long long total=0;
+
+    for(int i=0;i<l;i++){
+        unordered_map<Dir, int, ArrayHash> dirCount;
+
+        for(int j=0;j<l;j++){
+            if(i==j)continue;
+
+            int dx=points[j].first-points[i].first;
+            int dy=points[j].second-points[i].second;
+            Dir dir=normalize(dx,dy);
+            Dir perp=normalize(-dir[1],dir[0]);
+
+            if(dirCount.count(perp))
+                total+=dirCount[perp];
+
+            dirCount[dir]++;
+        }
+    }
+
+    return total;
+}
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> N;
+    
+    vector<Point> points(N);
+    for(int i = 0; i < N; ++i)
+        cin >> points[i].first >> points[i].second;
+
+    cout << countRightTriangles(points);
+}
