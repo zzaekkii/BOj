@@ -1,0 +1,82 @@
+// 11183번 Coast Length - 골드5 / BFS 
+#include <bits/stdc++.h>
+#define X first
+#define Y second
+using namespace std;
+
+int N, M;
+string input[1001];
+bool board[1005][1005];
+bool vis[1005][1005];
+
+queue<pair<int,int>> Q;
+int dx[]={0,-1,0,1}, dy[]={-1,0,1,0};
+int ans;
+
+void Bfs(){
+	while(!Q.empty()){
+		auto cur=Q.front(); Q.pop();
+		
+		for(int dir=0;dir<4;dir++){
+			int nx=cur.X+dx[dir];
+			int ny=cur.Y+dy[dir];
+			
+			if(nx>=0&&nx<=N+1&&ny>=0&&ny<=M+1&&!vis[nx][ny]){
+				if(!board[nx][ny]){
+					Q.push({nx,ny});
+					vis[nx][ny]=1;
+				}
+				else ans++;
+			}
+		}
+	}
+}
+
+// 해수 유입은 판 가장자리로만 판단하면 될 듯. 
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> N >> M;
+    
+    for(int i=0;i<N;i++)
+    	cin >> input[i];
+    
+    for(int i=0;i<N;i++)
+    	for(int j=0;j<M;j++)
+    		board[i+1][j+1]=input[i][j]-48;
+    
+    // 세로 왼, 오. 
+    for(int i=0;i<=N+1;i++){
+    	// 왼.
+    	if(!board[i][0]&&!vis[i][0]){
+			Q.push({i,0});
+			vis[i][0]=1;
+		}
+		Bfs();
+		
+		// 오.
+		if(!board[i][M+1]&&!vis[i][M+1]){
+			Q.push({i,M+1});
+			vis[i][M+1]=1;
+		}
+		Bfs();
+	}
+    
+    // 가로 위, 아래. 
+    for(int j=0;j<=M+1;j++){
+    	// 위.
+		if(!board[0][j]&&!vis[0][j]){
+			Q.push({0,j});
+			vis[0][j]=1;
+		}
+		Bfs();
+		
+		// 아래.
+		if(!board[N+1][j]&&!vis[N+1][j]){
+			Q.push({N+1,j});
+			vis[N+1][j]=1;
+		}
+		Bfs();
+	}
+	
+	cout << ans;
+}
