@@ -2,8 +2,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+struct tp{
+	int cost, a, b;
+};
+
 int V, E;
-tuple<int,int,int> edge[100001];
+tp edge[100001];
 int root[10001];
 
 int cnt, ans;
@@ -18,7 +22,7 @@ int Find(int x){
 	return root[x]=Find(root[x]);
 }
 
-bool IsDiffGroup(int x, int y){
+bool Union(int x, int y){
 	int rootX=Find(x);
 	int rootY=Find(y);
 	if(rootX==rootY)return 0;
@@ -48,16 +52,15 @@ int main(){
     	edge[i]={cost,A,B};
 	}
 	
-	sort(edge,edge+E);
+	sort(edge,edge+E,[](tp a,tp b){return a.cost<b.cost;});
 	
-	for(int i=0;i<E;i++){
-		int cost,A,B;
-		tie(cost,A,B)=edge[i];
+	int idx=0;
+	while(cnt<V-1){
+		tp cur=edge[idx++];
 		
-		if(IsDiffGroup(A,B)){
-			ans+=cost;
+		if(Union(cur.a,cur.b)){
+			ans+=cur.cost;
 			cnt++;
-			if(cnt==V-1)break;
 		}
 	}
 	
