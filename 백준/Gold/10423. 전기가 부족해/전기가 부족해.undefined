@@ -1,0 +1,75 @@
+// 10423번 전기가 부족해 - 골드3 / MST(크루스칼) 
+#include <bits/stdc++.h>
+using namespace std;
+
+struct tp{
+	int cost, a, b;
+};
+
+int N, M, K; // N개 도시, M개 케이블(간선), K개 발전소. 
+tp edge[100001];
+int root[1001];
+
+int cnt, ans;
+
+void Init(){
+	for(int i=0;i<1001;i++)
+		root[i]=-1;
+}
+
+int Find(int x){
+	if(root[x]<0)return x;
+	return root[x]=Find(root[x]);
+}
+
+bool Union(int x, int y){
+	int rootX=Find(x);
+	int rootY=Find(y);
+	if(rootX==rootY)return 0;
+	
+	int rankX=-(root[rootX]+1);
+	int rankY=-(root[rootY]+1);
+	if(rankX<rankY)
+		root[rootX]=rootY;
+	else{
+		root[rootY]=rootX;
+		if(rootX==rootY)
+			root[rootX]--;
+	}
+	
+	return 1;
+}
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    Init();
+    
+    cin >> N >> M >> K;
+    cnt=K;
+    
+    for(int power, i=0;i<K;i++){
+    	cin >> power;
+
+    	Union(0,power); // 0도시를 발전소의 영역으로. 
+	}
+    
+    for(int i=0;i<M;i++){
+    	int A, B, cost;
+    	cin >> A >> B >> cost;
+    	edge[i]={cost,A,B};
+	}
+	
+	sort(edge,edge+M,[](tp a,tp b){return a.cost<b.cost;});
+	
+	int idx=0;
+	while(cnt<N){
+		tp cur=edge[idx++];
+		
+		if(Union(cur.a,cur.b)){
+			ans+=cur.cost;
+			cnt++;
+		}
+	}
+	
+	cout << ans;
+}
