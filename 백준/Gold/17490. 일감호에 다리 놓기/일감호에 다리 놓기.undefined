@@ -1,0 +1,96 @@
+// 17490번 일감호에 다리 놓기 - 골드3 / MST(크루스칼) 
+#include <bits/stdc++.h>
+#define SIZE 1000001
+typedef long long ll; 
+using namespace std;
+
+struct tp{
+	ll cost;
+	int a, b;
+};
+
+ll N, M, K; // N개 강의동, M개 공사 중, K개 돌.
+tp edge[SIZE*2];
+int root[SIZE];
+bool block[SIZE];
+
+ll total;
+
+void Init(){
+	for(int i=0;i<SIZE;i++)
+		root[i]=-1;
+}
+
+int Find(int x){
+	if(root[x]<0)return x;
+	return root[x]=Find(root[x]);
+}
+
+bool Union(int x, int y){
+	int rootX=Find(x);
+	int rootY=Find(y);
+	if(rootX==rootY)return 0;
+	
+	int rankX=-(root[rootX]+1);
+	int rankY=-(root[rootY]+1);
+	if(rankX<rankY)
+		root[rootX]=rootY;
+	else{
+		root[rootY]=rootX;
+		if(rootX==rootY)
+			root[rootX]--;
+	}
+	
+	return 1;
+}
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);    
+    Init();
+    cin >> N >> M >> K;
+    
+    int idx=0;
+    for(;idx<N;idx++){
+    	ll cost;
+    	cin >> cost;
+    	edge[idx]={cost,0,idx+1}; // 와우도를 0으로 설정.
+	}
+	
+    for(int i=0;i<M;i++){
+    	int A, B;
+    	cin >> A >> B;
+    	
+        if(A>B)swap(A,B);
+
+    	if(B-A==1)block[A]=1;
+    	else block[B]=1;
+	}
+    
+    for(int i=1;i<=N;i++){
+    	if(!block[i]){
+    		int nxt=(i%N)+1;
+    		edge[idx++]={0,i,nxt};
+    	}
+	}
+    
+	sort(edge,edge+idx,[](tp a,tp b){return a.cost<b.cost;});
+	
+    if(M<=1){
+        cout << "YES";
+        return 0;
+    }
+    
+	int cnt=0;
+	idx=0;
+	while(cnt<N){
+		tp cur=edge[idx++];
+		
+		if(Union(cur.a,cur.b)){
+			total+=cur.cost;
+			cnt++;
+		}
+	}
+
+	if(total>K)cout << "NO";
+	else cout << "YES";
+}
