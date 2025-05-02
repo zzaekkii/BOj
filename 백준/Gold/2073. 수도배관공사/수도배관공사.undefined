@@ -1,0 +1,28 @@
+// 2073번 수도배관공사 - 골드4 / DP, 배낭 
+#include <bits/stdc++.h>
+#define X first
+#define Y second
+using namespace std;
+
+int D, P;
+pair<int,int> pipes[351];
+int dp[100001];
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> D >> P;
+    
+    for(int i=0;i<P;i++)
+    	cin >> pipes[i].X >> pipes[i].Y;
+    
+    dp[0]=1e9;
+    for(int i=0;i<P;i++){
+    	int len=pipes[i].X;
+    	int cap=pipes[i].Y;
+    	
+    	for(int j=D;j>=len;j--)
+    		dp[j]=max(dp[j],min(dp[j-len],cap));
+	}
+	
+	cout << dp[D];
+}
