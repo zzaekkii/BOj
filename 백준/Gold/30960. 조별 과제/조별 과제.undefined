@@ -1,0 +1,31 @@
+// 30960번 조별 과제 - 골드5 / 그리디, 누적합 
+#include <bits/stdc++.h>
+typedef long long ll;
+using namespace std;
+
+int N;
+int arr[500001];
+ll total, ans;
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> N;
+    
+    for(int i=0;i<N;i++)
+    	cin >> arr[i];
+    
+    sort(arr,arr+N);
+    
+    total=arr[2]-arr[0];
+    for(int i=4;i<N;i+=2)
+    	total+=arr[i]-arr[i-1];
+     
+    ans=total;
+    // 3개조 로테이션.
+    for(int i=2;i<N-1;i+=2){ 	
+    	total+=-arr[i]*2+arr[i+1]+arr[i-1];
+    	ans=min(ans,total);
+	}
+	
+	cout << ans;
+}
