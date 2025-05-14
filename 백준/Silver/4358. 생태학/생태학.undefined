@@ -1,0 +1,23 @@
+// 4358번 생태학 - 실버2 / 맵 
+#include <bits/stdc++.h>
+using namespace std;
+
+map<string,int> tree;
+string name;
+int total;
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    
+	while(getline(cin, name)){
+		if(tree.find(name)!=tree.end())tree[name]++;
+		else tree.insert({name,1});
+		total++;
+	}
+	
+    cout<<fixed;
+    cout.precision(4);
+    
+	for(auto a: tree)
+		cout << a.first << ' ' << (double)a.second/total*100 << '\n';
+}
