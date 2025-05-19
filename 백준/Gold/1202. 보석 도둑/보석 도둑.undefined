@@ -1,0 +1,44 @@
+// 1202번 보석 도둑 - 골드2 / 그리디 
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Jewel{
+	int weight, value;
+	
+	bool operator<(const Jewel& other) const {
+		return weight < other.weight; // 무게 오름차순. 
+	}
+};
+
+int N, K; // 보석 N개, 가방 K개.
+Jewel jew[300001];
+int bag[300001]; // 각 가방 가용 무게. 
+
+priority_queue<int> pq; // 가치 우선순위. 
+long long ans;
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> N >> K;
+    
+    for(int i=0;i<N;i++)
+    	cin >> jew[i].weight >> jew[i].value;
+    
+    for(int i=0;i<K;i++)
+    	cin >> bag[i];
+    
+    sort(jew,jew+N);
+    sort(bag,bag+K);
+    
+    int idx=0;
+    for(int i=0;i<K;i++){
+    	while(idx<N&&jew[idx].weight<=bag[i])
+    		pq.push(jew[idx++].value);
+    	
+    	if(!pq.empty()){
+    		ans+=pq.top(); pq.pop();
+    	}
+	}
+	
+	cout << ans;
+}
