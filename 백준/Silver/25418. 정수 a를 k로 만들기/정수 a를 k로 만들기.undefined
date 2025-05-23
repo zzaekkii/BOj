@@ -1,0 +1,21 @@
+// 25418번 정수 a를 k로 만들기 - 실버2 / DP 
+#include <bits/stdc++.h>
+using namespace std;
+
+int A, K;
+int dp[1'000'001];
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> A >> K;
+    
+    for(int i=1;i<=K;i++)dp[i]=999999;
+    dp[A]=0;
+    
+    for(int i=A+1;i<=K;i++){
+    	dp[i]=min(dp[i],dp[i-1]+1);
+    	if(!(i%2))dp[i]=min(dp[i],dp[i/2]+1);
+	}
+	
+	cout << dp[K];
+}
