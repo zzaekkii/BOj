@@ -1,0 +1,21 @@
+// 15991번 1, 2, 3 더하기 6 - 실버1 / DP 
+#include <bits/stdc++.h>
+#define MOD 1000000009
+using namespace std;
+
+int T, N;
+int dp[100001]={0,1,2,2,3,3,6}; 
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    
+    for(int i=7;i<=100000;i++)
+    	dp[i]=((dp[i-2]+dp[i-4])%MOD+dp[i-6])%MOD;
+    
+    cin >> T;
+    
+    while(T--){
+    	cin >> N;
+    	cout << dp[N] << '\n';
+	}
+}
