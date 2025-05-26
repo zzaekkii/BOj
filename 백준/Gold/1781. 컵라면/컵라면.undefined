@@ -1,0 +1,31 @@
+// 1781번 컵라면 - 골드2 / 우선순위 큐 
+#include <bits/stdc++.h>
+#define MAX 200001
+using namespace std;
+
+int N;
+priority_queue<int, vector<int>, less<int>> pq;
+vector<int> ramen[MAX];
+int total;
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	for(int i=0;i<N;i++){
+		int deadline, noodle;
+		cin >> deadline >> noodle;
+		
+		ramen[deadline].emplace_back(noodle);
+	}
+	
+	for(int day=N;day>=1;day--){
+		for(auto a: ramen[day])pq.push(a);
+		
+		if(!pq.empty()){
+			total+=pq.top();pq.pop();
+		}
+	}
+	
+	cout << total;
+}
