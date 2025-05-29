@@ -1,0 +1,41 @@
+// 2696번 중앙값 구하기 - 골드2 / 우선순위 큐 
+#include <bits/stdc++.h>
+using namespace std;
+
+int T, M, N;
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> T;
+    
+    while(T--){
+    	cin >> M;
+		
+		priority_queue<int, vector<int>, less<int>> pq_a;
+		priority_queue<int, vector<int>, greater<int>> pq_b;
+		vector<int> ans;
+		
+		for(int i=0;i<M;i++){
+	    	cin >> N;
+	    	
+	    	if(pq_a.empty()||N<=pq_a.top())pq_a.push(N);
+	    	else pq_b.push(N);
+				
+			if(pq_a.size()>pq_b.size()+1){
+				pq_b.push(pq_a.top());
+				pq_a.pop();
+			}
+			else if(pq_b.size()>pq_a.size()){
+				pq_a.push(pq_b.top());
+				pq_b.pop();
+			}
+	    	
+	    	if(!(i%2))ans.emplace_back(pq_a.top());
+		}
+		
+		cout << ans.size() << '\n';
+		for(auto a: ans)
+			cout << a << ' ';
+		cout << '\n';
+	}
+}
