@@ -1,0 +1,33 @@
+// 15887번 욱제는 결벽증이야!! - 실버5 / 그리디 
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+vector<int> V;
+vector<pair<int,int>> lst; 
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    cin >> N;
+    
+    V.resize(N+1);
+    
+    for(int i=1;i<=N;i++)
+    	cin >> V[i];
+    
+    for(int i=1;i<=N;i++){
+    	if(V[i]!=i){
+    		for(int j=i+1;j<=N;j++){
+    			if(V[j]==i){
+    				reverse(V.begin()+i,V.begin()+j+1);
+    				lst.emplace_back(i,j);
+    				break;
+				}
+			}
+		}
+	}
+	
+	cout << lst.size() << '\n';
+	for(auto a: lst)
+		cout << a.first << ' ' << a.second << '\n';
+}
