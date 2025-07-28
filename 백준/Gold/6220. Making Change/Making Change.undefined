@@ -1,0 +1,20 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int C, N, T;
+int dp[1001];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	for(int i=1;i<1001;i++)dp[i]=0x3f3f3f3f;
+	cin >> C >> N;
+	
+	while(N--){
+		cin >> T;
+		
+		for(int i=T;i<=C;i++)
+			dp[i]=min(dp[i],dp[i-T]+1);
+	}
+	
+	cout << dp[C];
+}
