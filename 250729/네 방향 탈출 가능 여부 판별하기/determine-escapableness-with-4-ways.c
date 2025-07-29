@@ -86,7 +86,7 @@ void push(Queue* q, Point value){
     }
     else{
         q->rear->next=newNode;
-        q->front=newNode;
+        q->rear=newNode;
     }
 }
 
