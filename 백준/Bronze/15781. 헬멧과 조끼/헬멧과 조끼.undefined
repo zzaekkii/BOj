@@ -1,0 +1,25 @@
+#include <stdio.h>
+#define max(a, b) (((a)>(b))?(a):(b))
+
+int N, M, T;
+int ans;
+
+int main(){
+    scanf("%d %d",&N,&M);
+    
+    int mx=0;
+    while(N--){
+        scanf("%d",&T);
+        mx=max(mx,T);
+    }
+    ans+=mx;
+    
+    mx=0;
+    while(M--){
+        scanf("%d",&T);
+        mx=max(mx,T);
+    }
+    ans+=mx;
+    
+    printf("%d",ans);
+}
