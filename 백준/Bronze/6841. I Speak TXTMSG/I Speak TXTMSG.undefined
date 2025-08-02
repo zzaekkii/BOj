@@ -1,0 +1,30 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+unordered_map<string,string> M;
+
+void init(){
+    M["CU"]="see you";
+    M[":-)"]="I’m happy";
+    M[":-("]="I’m unhappy";
+    M[";-)"]="wink";
+    M[":-P"]="stick out my tongue";
+    M["(~.~)"]="sleepy";
+    M["TA"]="totally awesome";
+    M["CCC"]="Canadian Computing Competition";
+    M["CUZ"]="because";
+    M["TY"]="thank-you";
+    M["YW"]="you're welcome";
+    M["TTYL"]="talk to you later";
+}
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    init();
+    
+    while(cin >> S){
+        if(M.find(S)!=M.end()) cout << M[S] << '\n';
+        else cout << S << '\n';
+    }
+}
