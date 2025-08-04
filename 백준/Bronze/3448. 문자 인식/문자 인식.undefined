@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	cin.ignore();
+	
+	while(N--){
+		string line;
+		int total=0, reco=0;
+		
+		while(getline(cin,line)){
+			if(line.empty())break;
+			
+			for(char ch: line)
+				if(ch!='#')reco++;
+			
+			total+=line.size();
+		}
+		
+		int ratio=(10000*reco/total+5)/10;
+		
+		cout << "Efficiency ratio is " << ratio/10;
+		
+		ratio%=10;
+		if(ratio)cout << '.' << ratio;
+		
+		cout << "%.\n";
+	}
+}
