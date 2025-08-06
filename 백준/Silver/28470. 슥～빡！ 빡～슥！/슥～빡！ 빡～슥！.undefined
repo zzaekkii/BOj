@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+typedef long long ll;
+using namespace std;
+
+int N;
+int A[100001], B[100001], K[100001];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+    for(int i=0;i<N;i++)cin >> A[i];
+    for(int i=0;i<N;i++)cin >> B[i];
+    for(int i=0;i<N;i++){
+    	double k;
+    	cin >> k;
+		K[i]=int(k*10);
+    }
+	
+	ll total=0;
+    for(int i=0;i<N;i++){
+        int atk=(A[i]*K[i])/10-B[i];
+        int def=A[i]-(B[i]*K[i])/10;
+        total+=max(atk,def);
+    }
+	
+	cout << total;
+}
