@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+long long K;
+long long A[100001];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> K;
+	
+	for(int i=0;i<N;i++)
+		cin >> A[i];
+	
+	sort(A,A+N);
+	
+	long long ans=0;
+	if(A[N-1]>K)ans=0;
+	else if(A[0]<=0)ans=-1;
+	else{
+		for(int i=1;i<N;i++)
+			ans+=(K-A[i])/A[0];
+		ans++;
+	}
+	
+	cout << ans;
+}
