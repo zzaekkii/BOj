@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, K, P, C, T;
+int parent[100001];
+
+int dfs(int x){
+	if(x==0)return 0;
+	return dfs(parent[x])+1;
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> K;
+	
+	for(int i=0;i<N-1;i++){
+		cin >> P >> C;
+		parent[C]=P;
+	}
+	
+	int target=0;
+	for(int i=0;i<N;i++){
+		cin >> T;
+		if(T==K)target=i;
+	}
+	
+	cout << dfs(target);
+}
