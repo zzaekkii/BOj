@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, M, T;
+int origin_dog[101];
+int cur_dog[101];
+
+void fur(int idx){
+	for(int i=1;i<=N;i++)
+		if(i!=idx)
+			cur_dog[i]=max(cur_dog[i]-1,0);
+}
+
+void brush(int idx, int day){
+	if(cur_dog[idx]==-(day-1)||cur_dog[idx]>0)
+		cur_dog[idx]=origin_dog[idx];
+	else cur_dog[idx]=-day;
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=1;i<=N;i++){
+		cin >> origin_dog[i];
+		cur_dog[i]=origin_dog[i];
+	}
+	
+	for(int day=1;day<=M;day++){
+		cin >> T;
+		
+		brush(T, day);
+		fur(T);
+	}
+	
+	int cnt=0;
+	for(int i=1;i<=N;i++)
+		if(cur_dog[i]<=0)cnt++;
+	
+	cout << cnt;
+}
