@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int T,N;
+int dp[1001];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	
+	for(int i=1;i<=1000;i++)dp[i]=1;
+	
+	for(int i=1;i<=1000;i++)
+		for(int j=0;j<i;j++)
+			if(!((i-j)%2))
+				dp[i]+=dp[(i-j)/2];
+	
+	cin >> T;
+	
+	while(T--){
+		cin >> N;
+		cout << dp[N] << '\n';
+	}
+}
