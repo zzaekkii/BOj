@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, T;
+int nxt[1001];
+int dp[1001];
+
+int dfs(int x){
+	if(dp[x]>0)return dp[x];
+	
+	if(dp[x]==-1){
+		int v=nxt[x];
+		int len=1;
+		
+		while(x!=v){
+			len++;
+			v=nxt[v];
+		}
+		
+		v=x;
+		do{
+			dp[v]=len;
+			v=nxt[v];
+		}while(v!=x);
+		
+		return dp[x];
+	}
+	
+	dp[x]=-1;
+	int res=1+dfs(nxt[x]);
+	
+	if(dp[x]==-1)dp[x]=res;
+	return dp[x];
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	for(int i=1;i<=N;i++)
+		cin >> nxt[i];
+	
+	for(int i=1;i<=N;i++)
+		if(!dp[i])dfs(i);
+	
+	int ans_num=1, ans_len=dp[1];
+	for(int i=2;i<=N;i++)
+		if(dp[i]>ans_len||(dp[i]==ans_len&&i<ans_num)){
+			ans_num=i;
+			ans_len=dp[i];
+		}
+	
+	cout << ans_num;
+}
