@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+string S;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> S;
+	
+	stack<char> st;
+	int day=0;
+	
+	int len=S.size();
+	for(int i=0;i<len;i++){
+		if(st.empty())st.push(S[i]);
+		else if(S[i]=='('&&st.top()==')')st.pop();
+		else if(S[i]==')'&&st.top()=='(')st.pop();
+		else st.push(S[i]);
+		
+		day=max(day,(int)st.size());
+	}
+	
+	if(st.empty())cout << day;
+	else cout << -1;
+}
