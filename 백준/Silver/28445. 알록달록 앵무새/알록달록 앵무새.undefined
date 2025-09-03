@@ -1,0 +1,17 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+set<string> st;
+
+int main(){
+    ios_base::sync_with_stdio(0); cin.tie(0);
+    for(int i=0;i<4;i++){
+        cin >> S;
+        st.insert(S);
+    }
+    
+    for(auto i=st.begin();i!=st.end();i++)
+        for(auto j=st.begin();j!=st.end();j++)
+            cout << *i << ' ' << *j << '\n';
+}
