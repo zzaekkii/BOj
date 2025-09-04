@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, M, L, R;
+string S;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> S >> M;
+	
+	while(M--){
+		cin >> L >> R;
+		L--,R--;
+		
+		int st=L;
+		int ans=0;
+		
+		for(;st<R;st++){
+			string head, tail;
+			
+			for(int i=L;i<=st;i++)
+				head+=S[i];
+			
+			for(int i=st+1;i<=R;i++)
+				tail+=S[i];
+			
+			reverse(head.begin(),head.end());
+			
+			int len=min(head.size(),tail.size());
+			int cnt=0;
+			
+			for(int i=0;i<len;i++)
+				if(head[i]==tail[i])cnt++;
+			
+			ans=max(ans,cnt);
+		}
+	
+		cout << ans << '\n';
+	}
+}
