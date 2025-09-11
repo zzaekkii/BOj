@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+string S;
+
+int main(){
+    for(int t=1;;t++){
+        cin >> N;
+        if(!N)break;
+		cin.ignore();
+        
+        vector<string> student;
+        for(int i=0;i<N;i++){
+            getline(cin, S);
+            student.push_back(S);
+        }
+        
+        bool idx[101]={0};
+        int len=2*N-1;
+        for(int i=0;i<len;i++){
+            int T; char C;
+            cin >> T >> C;
+            
+            idx[T-1]=!idx[T-1];
+        }
+        
+        for(int i=0;i<N;i++)
+            if(idx[i])cout << t << ' ' << student[i] << '\n';
+    }
+}
