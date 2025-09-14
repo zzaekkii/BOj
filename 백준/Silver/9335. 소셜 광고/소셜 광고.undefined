@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int T, N, D, F;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> T;
+	
+	while(T--){
+		cin >> N;
+		
+		int user[21]={0};
+		for(int i=0;i<N;i++){
+			cin >> D;
+			
+			user[i]=1<<i;
+			for(int j=0;j<D;j++){
+				cin >> F;
+				user[i]|=1<<(F-1);
+			}
+		}
+		
+		int ans=N;
+		for(int subset=1;subset<(1<<N);subset++){
+			int cnt=0, total=0;
+			
+			for(int i=0;i<N;i++){
+				if((subset&(1<<i))){
+					total|=user[i];
+					cnt++;
+				}
+			}
+			
+			if(total==(1<<N)-1)
+				ans=min(ans,cnt);
+		}
+		
+		cout << ans << '\n';
+	}
+}
