@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int dp[41]={1};
+string S;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> S;
+	
+	int l=S.size();	
+	for(int i=1;i<l;i++){
+        // 두자리 가능하면 경우의 수 분기.
+		if((S[i-1]-48)*10+(S[i]-48)<=34&&(S[i-1]!=48)){
+			if(i==1)dp[i]=1;
+			else dp[i]=dp[i-2];
+		}
+		if(S[i]!=48)
+			dp[i]+=dp[i-1]; // 나눠질 수 있음을 감안.
+	}
+	
+	cout << dp[l-1];
+}
