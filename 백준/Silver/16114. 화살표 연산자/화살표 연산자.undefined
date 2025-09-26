@@ -1,0 +1,14 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int X, N;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> X >> N;
+	
+	if(N!=1&&N%2)cout << "ERROR";
+	else if((X<0&&N==1)||(X>0&&!N))cout << "INFINITE";
+	else if(X>0&&!(N%2)&&N)cout << ((X+(N/2)-1)/(N/2)-1);
+	else cout << 0;
+}
