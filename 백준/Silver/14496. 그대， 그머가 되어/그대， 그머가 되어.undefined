@@ -1,0 +1,35 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int A, B, N, M, X, Y;
+vector<int> edges[1001];
+int dist[1001];
+queue<int> Q;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> A >> B >> N >> M;
+	
+	for(int i=1;i<=N;i++)dist[i]=-1;
+	dist[A]=0;
+	Q.push(A);
+	
+	while(M--){
+		cin >> X >> Y;
+		
+		edges[X].emplace_back(Y);
+		edges[Y].emplace_back(X);
+	}
+	
+	while(!Q.empty()){
+		int cur=Q.front(); Q.pop();
+		
+		for(int nxt: edges[cur])
+			if(dist[nxt]==-1){
+				dist[nxt]=dist[cur]+1;
+				Q.push(nxt);
+			}
+	}
+	
+	cout << dist[B];
+}
