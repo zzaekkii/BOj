@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+#define MAX 10000000
+using namespace std;
+
+int T, N, D, C;
+int A, B, S;
+
+int hacked_time[10001];
+priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> T;
+	
+	while(T--){
+		cin >> N >> D >> C;
+		
+		vector<pair<int,int>> depen[10001];
+		for(int i=1;i<=N;i++)hacked_time[i]=MAX;
+		hacked_time[C]=0;
+		
+		while(D--){
+			cin >> A >> B >> S;
+			depen[B].push_back({A,S});
+		}
+		
+		pq.push({0,C});
+		while(!pq.empty()){
+			int cur_time=pq.top().first;
+			int cur_num=pq.top().second;
+			pq.pop();
+			
+			for(auto hack: depen[cur_num]){
+				int nxt=hack.first;
+				int nxt_time=hack.second;
+				
+				if(hacked_time[nxt]>cur_time+nxt_time){
+					hacked_time[nxt]=cur_time+nxt_time;
+					pq.push({hacked_time[nxt],nxt});
+				}
+			}
+		}
+		
+		int cnt=0, last=0;
+		for(int i=1;i<=N;i++)
+			if(hacked_time[i]!=MAX){
+				last=max(last,hacked_time[i]);
+				cnt++;
+			}
+		
+		cout << cnt << ' ' << last << '\n';
+	}
+}
