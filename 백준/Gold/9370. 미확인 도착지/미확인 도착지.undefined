@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+#define MAX 2000001
+using namespace std;
+
+int T, N, M, E;
+int S, G, H;
+int A, B, D, X;
+int dest[101];
+
+int dist_s[2001];
+int dist_g[2001];
+int dist_h[2001];
+
+priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+
+void init(){
+	for(int i=1;i<=N;i++)
+		dist_s[i]=dist_g[i]=dist_h[i]=MAX;
+}
+
+void dijkstra(int start, int dist[], vector<pair<int,int>> edges[]){
+	dist[start]=0;
+	pq.push({dist[start],start});
+	
+	while(!pq.empty()){
+		int cur_dist=pq.top().first;
+		int cur_road=pq.top().second;
+		pq.pop();
+		
+		for(auto road: edges[cur_road]){
+			int nxt_road=road.first;
+			int nxt_dist=road.second;
+			
+			if(dist[nxt_road]>cur_dist+nxt_dist){
+				dist[nxt_road]=cur_dist+nxt_dist;
+				pq.push({dist[nxt_road],nxt_road});
+			}
+		}
+	}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> T;
+	
+	while(T--){
+		cin >> N >> M >> E >> S >> G >> H;
+		
+		init();
+		bool vis[2001]={0};
+		vector<pair<int,int>> edges[2001];
+		
+		while(M--){
+			cin >> A >> B >> D;
+			edges[A].push_back({B,D});
+			edges[B].push_back({A,D});
+		}
+		
+		for(int i=0;i<E;i++){
+			cin >> X;
+			dest[i]=X;
+		}
+		sort(dest,dest+E);
+		
+		dijkstra(S,dist_s,edges);
+		dijkstra(G,dist_g,edges);
+		dijkstra(H,dist_h,edges);
+		
+		for(int i=0;i<E;i++){
+			int path1=dist_s[G]+dist_g[H]+dist_h[dest[i]];
+			int path2=dist_s[H]+dist_h[G]+dist_g[dest[i]];
+			
+			if(min(path1,path2)==dist_s[dest[i]])
+				cout << dest[i] << ' ';
+		}
+		cout << '\n';
+	}
+}
