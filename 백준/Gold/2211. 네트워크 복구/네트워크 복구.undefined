@@ -1,0 +1,46 @@
+#include <bits/stdc++.h>
+#define MAX 10001
+using namespace std;
+
+int N, M, A, B, C;
+int com[1001];
+vector<pair<int,int>> net[1001];
+int par[1001];
+
+priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=1;i<=N;i++)com[i]=MAX;
+	com[1]=0;
+	
+	while(M--){
+		cin >> A >> B >> C;
+		net[A].push_back({B,C});
+		net[B].push_back({A,C});
+	}
+	
+	pq.push({0,1});
+	while(!pq.empty()){
+		int cur_sec=pq.top().first;
+		int cur_com=pq.top().second;
+		pq.pop();
+		
+		for(auto n: net[cur_com]){
+			int nxt_com=n.first;
+			int nxt_sec=n.second;
+			
+			if(com[nxt_com]>cur_sec+nxt_sec){
+				com[nxt_com]=cur_sec+nxt_sec;
+				par[nxt_com]=cur_com;
+				pq.push({com[nxt_com],nxt_com});
+			}
+		}
+	}
+	
+	cout << N-1 << '\n';
+	for(int i=2;i<=N;i++)
+		cout << i << ' ' << par[i] << '\n';
+}
