@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+#define MAX 50000000
+using namespace std;
+
+int N, M, A, B, C;
+
+int barn[50001];
+vector<pair<int,int>> paths[50001];
+priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=1;i<=N;i++)barn[i]=MAX;
+	barn[1]=0;
+	
+	while(M--){
+		cin >> A >> B >> C;
+		paths[A].push_back({B,C});
+		paths[B].push_back({A,C});
+	}
+	
+	pq.push({0,1});
+	while(!pq.empty()){
+		int cur_cows=pq.top().first;
+		int cur_barn=pq.top().second;
+		pq.pop();
+		
+		for(auto p: paths[cur_barn]){
+			int nxt_barn=p.first;
+			int nxt_cows=p.second;
+			
+			if(barn[nxt_barn]>cur_cows+nxt_cows){
+				barn[nxt_barn]=cur_cows+nxt_cows;
+				pq.push({barn[nxt_barn],nxt_barn});
+			}
+		}
+	}
+	
+	cout << barn[N];
+}
