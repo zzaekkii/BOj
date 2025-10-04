@@ -1,0 +1,1 @@
+main(N,C,P){scanf("%d%d%d",&N,&C,&P);printf("%d",N*P);}
