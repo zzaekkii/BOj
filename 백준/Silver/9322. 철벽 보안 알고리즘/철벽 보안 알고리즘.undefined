@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int T, N;
+int seq[1001];
+string buf[1001];
+string S;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> T;
+	
+	while(T--){
+		cin >> N;
+		
+		map<string,int> dict;
+		
+		for(int i=0;i<N;i++){
+			cin >> S;
+			dict.insert({S,i});
+		}
+		
+		for(int i=0;i<N;i++){
+			cin >> S;
+			seq[i]=dict[S];
+		}
+		
+		for(int i=0;i<N;i++){
+			cin >> S;
+			buf[seq[i]]=S;
+		}
+		
+		for(int i=0;i<N;i++)
+			cout << buf[i] << ' ';
+		
+		cout << '\n';
+	}
+}
