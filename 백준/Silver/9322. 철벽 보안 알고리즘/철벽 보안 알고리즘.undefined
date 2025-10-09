@@ -13,7 +13,7 @@ int main(){
 	while(T--){
 		cin >> N;
 		
-		map<string,int> dict;
+		unordered_map<string,int> dict;
 		
 		for(int i=0;i<N;i++){
 			cin >> S;
