@@ -1,0 +1,99 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, M;
+int board[9][9];
+vector<pair<int,int>> V;
+
+int ans=64;
+
+int dx[]={-1,0,1,0}, dy[]={0,1,0,-1};
+
+int count(){
+	int cnt=0;
+	
+	for(int i=0;i<N;i++)
+		for(int j=0;j<M;j++)
+			if(board[i][j]==0)
+				cnt++;
+	
+	return cnt;
+}
+
+void visit(int x, int y, int dir){
+	while(1){
+		x+=dx[dir];
+		y+=dy[dir];
+		
+		if(x>=0&&x<N&&y>=0&&y<M){
+			if(board[x][y]==6)return;
+			if(board[x][y]==0)
+				board[x][y]=8;
+		}
+		else return;
+	}
+}
+
+void dfs(int n){
+	if(n==V.size()){
+		ans=min(ans,count());
+		return;
+	}
+	
+	int x=V[n].first, y=V[n].second;
+	int tmp[9][9]={0};
+	
+	for(int dir=0;dir<4;dir++){
+		for(int i=0;i<N;i++)
+			for(int j=0;j<M;j++)
+				tmp[i][j]=board[i][j];
+		
+		switch(board[x][y]){
+			case 1: // 직선. 
+				visit(x,y,dir);
+				break;
+			case 2: // 반대. 
+				visit(x,y,dir);
+				visit(x,y,(dir+2)%4);
+				break;
+			case 3: // 수직. 
+				visit(x,y,dir);
+				visit(x,y,(dir+1)%4);
+				break;
+			case 4: // 하나 제외 전부.
+				visit(x,y,dir);
+				visit(x,y,(dir+1)%4);
+				visit(x,y,(dir+2)%4);
+				break;
+			case 5: // 전부.
+				visit(x,y,dir);
+				visit(x,y,(dir+1)%4);
+				visit(x,y,(dir+2)%4);
+				visit(x,y,(dir+3)%4);
+				break;
+		}
+		
+		dfs(n+1);
+		
+		for(int i=0;i<N;i++)
+			for(int j=0;j<M;j++)
+				board[i][j]=tmp[i][j];
+	}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=0;i<N;i++)
+		for(int j=0;j<M;j++){
+			cin >> board[i][j];
+			
+			if(board[i][j]!=0&&board[i][j]!=6)
+				V.push_back({i,j});
+		}
+	
+	dfs(0);
+	
+	cout << ans;
+}
