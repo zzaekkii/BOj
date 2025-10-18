@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+int N;
+
+int len, cnt;
+bool vis[11];
+bool flag;
+
+void Dfs(string str){
+	if(flag)return;
+	
+	if(str.length()==len){
+		if(++cnt==N){
+			cout << S << ' ' << N << " = " << str << '\n';
+			flag=1;
+		}
+		return;
+	}
+	
+	for(int i=0;i<len;i++){
+		if(!vis[i]){
+			vis[i]=1;
+			Dfs(str+S[i]);
+			vis[i]=0;
+		}
+	}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	while(cin >> S >> N){
+		len=S.length();
+		flag=cnt=0;
+		
+		Dfs("");
+		
+		if(!flag)
+			cout << S << ' ' << N << " = No permutation\n";
+	}
+}
