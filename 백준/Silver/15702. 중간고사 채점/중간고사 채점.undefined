@@ -1,0 +1,35 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, M, T;
+char C;
+int point[101];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=0;i<N;i++)
+		cin >> point[i];
+	
+	int st_num=100001, mx=0;
+	
+	for(int i=0;i<M;i++){
+		cin >> T;
+		
+		int total=0;
+		for(int j=0;j<N;j++){
+			cin >> C;
+			
+			if(C=='O')total+=point[j];
+		}
+		
+		if(total>=mx){
+			if(total==mx) st_num=min(st_num,T);
+			else st_num=T;
+			mx=total;
+		}
+	}
+	
+	cout << st_num << ' ' << mx;
+}
