@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, M, K;
+int board[11][11];
+bool vis[11][11];
+
+int ans=-40000;
+
+void dfs(int x, int y, int sum, int cnt){
+	if(cnt==K){
+		ans=max(ans,sum);
+		return;
+	}
+	
+	for(int i=x;i<=N;i++)
+		for(int j=(i==x?y:1);j<=M;j++){
+			if(!vis[i][j]&&!vis[i-1][j]){
+				vis[i][j]=1;
+				
+				if(j+2<=M)dfs(i,j+2,sum+board[i][j],cnt+1);
+				else dfs(i+1,1,sum+board[i][j],cnt+1);
+				
+				vis[i][j]=0;
+			}
+		}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M >> K;
+	
+	for(int i=1;i<=N;i++)
+		for(int j=1;j<=M;j++)
+			cin >> board[i][j];
+	
+	dfs(1,1,0,0);
+	
+	cout << ans;
+}
