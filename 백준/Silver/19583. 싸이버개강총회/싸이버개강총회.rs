@@ -1,53 +1,49 @@
-use std::{collections::HashMap, io::{self, BufRead, Write}};
+use std::{collections::HashMap, io::{self, Read, Write}};
 
 fn main() {
-    let stdin = io::stdin();
-    let mut lines = stdin.lock().lines().flatten();
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
 
-    let times: Vec<String> = lines.next().unwrap()
-                                .split_whitespace()
-                                .map(|s| s.to_string()).collect();
-    
     let (start_time, end_time, quit_time) = (
-        time_to_u32(&times[0]),
-        time_to_u32(&times[1]),
-        time_to_u32(&times[2]),
+        time_to_u32(iter.next().unwrap()),
+        time_to_u32(iter.next().unwrap()),
+        time_to_u32(iter.next().unwrap()),
     );
 
-    let mut name_to_index: HashMap<String, usize> = std::collections::HashMap::new();
-    let mut attendance: Vec<[bool; 2]> = vec![];
+    let mut name_to_index= HashMap::new();
+    let mut attendance = vec![];
     let mut index = 0;
 
-    for line in lines {
-        let mut iter = line.split_whitespace();
-        let t = time_to_u32(iter.next().unwrap());
+    while let Some(t_str) = iter.next() {
+        let t = time_to_u32(t_str);
         let name = iter.next().unwrap();
 
-        let num = *name_to_index.entry(name.to_string()).or_insert_with(|| {
-            attendance.push([false; 2]);
-            let cur_index = index;
+        let num = *name_to_index.entry(name).or_insert_with(|| {
+            attendance.push(0u8);
+            let cur = index;
             index += 1;
-            cur_index
+            cur
         });
 
         if t <= start_time {
-            attendance[num][0] = true;
+            attendance[num] |= 0b01;
         }
-
         if t >= end_time && t <= quit_time {
-            attendance[num][1] = true;
+            attendance[num] |= 0b10;
         }
     }
 
-    let result = attendance.iter().filter(|&att| att[0] && att[1]).count();
+    let result = attendance.iter().filter(|&&x| x == 0b11).count();
 
     let mut out = io::BufWriter::new(io::stdout().lock());
     writeln!(out, "{}", result).unwrap();
 }
 
 fn time_to_u32(time: &str) -> u32 {
-    let hours: u32 = time[0..2].parse().unwrap();
-    let minutes: u32 = time[3..5].parse().unwrap();
+    let bytes = time.as_bytes();
+    let h = ((bytes[0] - b'0') as u32) * 10 + (bytes[1] - b'0') as u32;
+    let m = ((bytes[3] - b'0') as u32) * 10 + (bytes[4] - b'0') as u32;
 
-    hours * 60 + minutes
+    h * 60 + m
 }
