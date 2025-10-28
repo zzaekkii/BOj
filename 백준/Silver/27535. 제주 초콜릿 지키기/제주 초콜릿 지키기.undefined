@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+#define CNT 5
+using namespace std;
+
+pair<int,char> choco[5]={{0,'H'},{0,'T'},{0,'C'},{0,'K'},{0,'G'}};
+int M, T;
+
+int total;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	
+	for(int i=0;i<CNT;i++){
+		cin >> T;
+		choco[i].first=T;
+		
+		total+=T;
+	}
+	
+	cin >> M;
+	
+	while(M--){
+		int prev=total;
+		
+		for(int i=0;i<CNT;i++){
+			cin >> T;
+			choco[i].first-=T;
+			
+			total-=T;
+		}
+		
+		// 총 개수 prev 일의 자리 진법 + "7H" 출력
+		int last=prev%10;
+		if(last==0||last==1)
+			cout << total << "7H\n";
+		else{
+			string res="H7";
+			
+			int tmp=total;
+			if(tmp==0)res+="0";
+			while(tmp>0){
+				res+=(tmp%last)+48;
+				tmp/=last;
+			}
+			
+			reverse(res.begin(),res.end());
+			cout << res << '\n';
+		}
+		
+		// 양 내림차순 종류 이름 출력
+		if(total==0)cout << "NULL\n";
+		else {
+			pair<int,char> tmp[5];
+			copy(choco,choco+CNT,tmp);
+		
+			sort(tmp,tmp+CNT,[](const pair<int,char>& a, const pair<int,char>& b){
+				if(a.first==b.first)return a.second<b.second;
+				return a.first>b.first;
+			});
+			
+			for(int i=0;i<CNT;i++)
+				if(tmp[i].first>0)
+					cout << tmp[i].second;
+			cout << '\n';
+		}
+	}		
+}
