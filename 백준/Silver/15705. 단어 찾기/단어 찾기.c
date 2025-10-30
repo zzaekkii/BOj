@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+
+char S[101];
+int N, M;
+char board[101][101];
+_Bool vis[101][101];
+
+int dx[]={-1,-1,-1,0,1,1,1,0};
+int dy[]={-1,0,1,1,1,0,-1,-1};
+
+int len, ans;
+
+void dfs(int x, int y, int dir, int idx){
+	if(idx==len){
+		ans=1;
+		return;
+	}
+	
+	int nx=x+dx[dir];
+	int ny=y+dy[dir];
+	
+	if(nx>=0&&nx<N&&ny>=0&&ny<M&&board[nx][ny]==S[idx]&&!vis[nx][ny]){
+		vis[nx][ny]=1;
+		dfs(nx,ny,dir,idx+1);
+		vis[nx][ny]=0;
+	}
+}
+
+int main(){
+    scanf("%s %d %d ",S,&N,&M);
+	len=strlen(S);
+	
+	for(int i=0;i<N;i++)
+        gets(board[i]);
+	
+	for(int i=0;i<N;i++)
+		for(int j=0;j<M&&!ans;j++)
+			if(board[i][j]==S[0])
+				for(int dir=0;dir<8;dir++){
+					vis[i][j]=1;
+					dfs(i,j,dir,1);
+					vis[i][j]=0;
+				}
+	
+	printf("%d",ans);
+}
