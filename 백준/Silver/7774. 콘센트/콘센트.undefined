@@ -1,0 +1,34 @@
+#include <bits/stdc++.h>
+#define MAX 100001
+using namespace std;
+
+int N, M;
+int A[MAX], B[MAX];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=0;i<N;i++)
+		cin >> A[i];
+	
+	for(int i=0;i<M;i++)
+		cin >> B[i];
+	
+	sort(A,A+N);
+	sort(B,B+M);
+	
+	int alen=N-1, blen=M-1; // a->b꽂, b->a꽂. 
+	int acnt=1, bcnt=0; // 처음에 a꽂가능. 
+	while(alen>=0&&blen>=0){
+		acnt--;
+		bcnt+=A[alen--];
+		
+		while(bcnt>0&&blen>=0){
+			bcnt--;
+			acnt+=B[blen--];
+		}
+	}
+	
+	cout << acnt;
+}
