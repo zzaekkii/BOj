@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, K;
+string S;
+unordered_map<string,int> last;
+unordered_set<string> pinned;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	for(int i=0;i<N;i++){
+		cin >> S;
+		last[S]=i;
+	}
+	
+	cin >> K;
+	for(int i=0;i<K;i++){
+		cin >> S;
+		pinned.insert(S);
+	}
+	
+	vector<pair<int,string>> pin;
+	vector<pair<int,string>> unpin;
+	for(auto l: last){
+		if(pinned.find(l.first)!=pinned.end())
+			pin.push_back({l.second,l.first});
+		else unpin.push_back({l.second,l.first});
+	}
+	
+	sort(pin.begin(),pin.end(),greater<>());
+	sort(unpin.begin(),unpin.end(),greater<>());
+	
+	for(auto p: pin)
+		cout << p.second << '\n';
+	for(auto up: unpin)
+		cout << up.second << '\n';
+}
