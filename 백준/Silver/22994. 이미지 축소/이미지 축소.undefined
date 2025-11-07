@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+#define MAX 1001
+using namespace std;
+
+int N, M;
+string board[MAX];
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=0;i<N;i++)
+		cin >> board[i];
+	
+	int w=MAX, h=MAX;
+	for(int i=0;i<N;i++){
+		int cnt=1;
+		
+		for(int j=1;j<M;j++)
+			if(board[i][j]==board[i][j-1])cnt++;
+			else w=min(cnt,w), cnt=1;
+		
+		w=min(cnt,w);
+	}
+	
+	
+	for(int j=0;j<M;j++){
+		int cnt=1;
+		
+		for(int i=1;i<N;i++)
+			if(board[i][j]==board[i-1][j])cnt++;
+			else h=min(cnt,h), cnt=1;
+		
+		h=min(cnt,h);
+	}
+	
+	int ans_h=N/h, ans_w=M/w;
+	
+	cout << ans_h << ' ' << ans_w << '\n';
+	for(int i=0;i<ans_h;i++){
+		for(int j=0;j<ans_w;j++)
+			cout << board[i*h][j*w];
+		cout << '\n';
+	}
+}
