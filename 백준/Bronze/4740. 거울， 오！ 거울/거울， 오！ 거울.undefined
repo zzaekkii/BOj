@@ -1,0 +1,16 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	
+	while(1){
+		getline(cin, S);
+		
+		if(S=="***")break;
+		reverse(S.begin(), S.end());
+		cout << S << '\n';
+	}
+}
