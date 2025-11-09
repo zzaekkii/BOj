@@ -1,15 +1,1 @@
-#include <stdio.h>
-
-int M, S;
-int ans=1;
-
-int main(){
-    scanf("%d:%d",&M,&S);
-    
-    if(M==0&&S==30)S=0;
-    if(S>=30)S-=30;
-    
-    ans+=M/10+M%10+S/10;
-    
-    printf("%d",ans);
-}
+M,S,x=1;main(){scanf("%d:%d",&M,&S);if(S>=30)S-=30;x+=M/10+M%10+S/10;printf("%d",x);}
