@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+#define MAX 501
+#define X first
+#define Y second
+using namespace std;
+
+int N, M;
+bool board[MAX][MAX];
+bool vis[MAX][MAX];
+
+int dx[]={-1,0,1,0}, dy[]={0,1,0,-1};
+
+int cnt, mx_size;
+
+void bfs(int x, int y){
+	cnt++;
+	
+	queue<pair<int,int>> Q;
+	Q.push({x,y});
+	vis[x][y]=1;
+	int size=0;
+	
+	while(!Q.empty()){
+		auto cur=Q.front(); Q.pop();
+		int cur_x=cur.X;
+		int cur_y=cur.Y;
+		size++;
+		
+		for(int dir=0;dir<4;dir++){
+			int nx=cur_x+dx[dir];
+			int ny=cur_y+dy[dir];
+			
+			if(nx>=0&&nx<N&&ny>=0&&ny<M
+				&&board[nx][ny]&&!vis[nx][ny]){
+					vis[nx][ny]=1;
+					Q.push({nx,ny});
+				}
+		}
+	}
+	
+	mx_size=max(mx_size,size);
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> M;
+	
+	for(int i=0;i<N;i++)
+		for(int j=0;j<M;j++)
+			cin >> board[i][j];
+	
+	for(int i=0;i<N;i++)
+		for(int j=0;j<M;j++)
+			if(board[i][j]&&!vis[i][j])
+				bfs(i,j);
+	
+	cout << cnt << '\n' << mx_size;
+}
