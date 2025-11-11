@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+#define MAX 100001
+using namespace std;
+
+struct User{
+	int age, join;
+	string name;
+};
+
+int N, A;
+string S;
+User user[MAX];
+
+bool cmp(User a, User b){
+	if(a.age==b.age)return a.join < b.join;
+	return a.age < b.age;
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N;
+	
+	for(int i=0;i<N;i++){
+		cin >> A >> S;
+		user[i]={A,i,S};
+	}
+	
+	sort(user,user+N,cmp);
+	
+	for(int i=0;i<N;i++)
+		cout << user[i].age << ' ' << user[i].name << '\n';
+}
