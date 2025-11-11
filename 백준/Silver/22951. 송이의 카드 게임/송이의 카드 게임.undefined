@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{
+	int own, val;
+	Node* prev, *nxt;
+};
+
+int N, K, T;
+Node *head=0, *last=0;
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> K;
+	
+	for(int i=1;i<=N;i++)
+		for(int j=0;j<K;j++){
+			cin >> T;
+			
+			Node* node=new Node{i,T,0,0};
+			
+			if(!head){
+				head=node;
+			}
+			else{
+				last->nxt=node;
+				node->prev=last;
+			}
+			last=node;
+		}
+	head->prev=last;
+	last->nxt=head;
+	
+	Node* cur=head;
+	
+	while(cur->nxt!=cur){
+		int x=cur->val;
+		Node* tmp=cur;
+		
+		tmp->prev->nxt=tmp->nxt;
+		tmp->nxt->prev=tmp->prev;
+		
+		for(int i=0;i<x;i++)
+			cur=cur->nxt;
+		
+		delete tmp;
+	}
+	
+	cout << cur->own << ' ' << cur->val;
+}
