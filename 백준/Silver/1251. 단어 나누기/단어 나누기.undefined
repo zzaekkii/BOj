@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+string ans="~";
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> S;
+	
+	int len=S.length();
+	for(int l=1;l<len-1;l++){
+		for(int r=l+1;r<len;r++){
+			string fst=S.substr(0,l);
+			string sec=S.substr(l,r-l);
+			string thd=S.substr(r);
+			
+			reverse(fst.begin(),fst.end());
+			reverse(sec.begin(),sec.end());
+			reverse(thd.begin(),thd.end());
+			
+			fst+=sec+thd;
+			if(ans>fst)ans=fst;
+		}
+	}
+	
+	cout << ans;
+}
