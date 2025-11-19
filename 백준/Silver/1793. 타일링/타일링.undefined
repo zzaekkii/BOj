@@ -1,6 +1,10 @@
 use std::io::{self, BufRead, Write};
 
 fn main() {
+    let stdin = io::stdin();
+    let stdout = io::stdout();
+    let mut out = stdout.lock();
+
     let mut dp = vec![String::new(); 251];
     dp[0] = "1".to_string();
     dp[1] = "1".to_string();
@@ -10,9 +14,9 @@ fn main() {
         dp[i] = calculate_string(&dp[i - 1], &dp[i - 2]);
     }
 
-    for line in io::stdin().lock().lines() {
+    for line in stdin.lock().lines() {
         let n: usize = line.unwrap().trim().parse().unwrap();
-        writeln!(io::stdout().lock(), "{}", dp[n]).unwrap();
+        writeln!(out, "{}", dp[n]).unwrap();
     }
 }
 
@@ -24,31 +28,28 @@ fn calculate_string(x: &str, y: &str) -> String {
 
 fn mul2(x: &str) -> String {
     let mut carry = 0;
-    let mut result = String::with_capacity(x.len() + 1);
+    let mut result: Vec<u8> = Vec::with_capacity(x.len() + 1);
 
     let x_bytes = x.as_bytes();
-    let mut x_idx = x.len() as isize - 1;
 
-    while x_idx >= 0 || carry > 0 {
-        let digit = if x_idx >= 0 {
-            x_bytes[x_idx as usize] - b'0'
-        } else {
-            0
-        };
-
-        let prod = digit * 2 + carry;
-        result.push(((prod % 10) + b'0') as char);
+    for &b in x_bytes.iter().rev() {
+        let nx = b - b'0';
+        let prod = nx * 2 + carry;
+        result.push(((prod % 10) + b'0') as u8);
         carry = prod / 10;
-
-        x_idx -= 1;
     }
 
-    result.chars().rev().collect()
+    if carry > 0 {
+        result.push((carry + b'0') as u8);
+    }
+
+    result.reverse();
+    unsafe { String::from_utf8_unchecked(result) }
 }
 
 fn add(x: &str, y: &str) -> String {
     let mut carry = 0;
-    let mut result = String::with_capacity(x.len().max(y.len()) + 1);
+    let mut result: Vec<u8> = Vec::with_capacity(x.len().max(y.len()) + 1);
 
     let x_bytes = x.as_bytes();
     let y_bytes = y.as_bytes();
@@ -70,12 +71,13 @@ fn add(x: &str, y: &str) -> String {
         };
 
         let sum = nx + ny + carry;
-        result.push(((sum % 10) + b'0') as char);
+        result.push((sum % 10) + b'0');
         carry = sum / 10;
 
         x_idx -= 1;
         y_idx -= 1;
     }
 
-    result.chars().rev().collect()
+    result.reverse();
+    unsafe { String::from_utf8_unchecked(result) }
 }
