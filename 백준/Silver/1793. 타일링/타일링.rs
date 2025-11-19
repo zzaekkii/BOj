@@ -4,11 +4,7 @@ fn main() {
     for line in io::stdin().lock().lines() {
         let n: usize = line.unwrap().trim().parse().unwrap();
 
-        let mut dp = vec![String::new(); 3];
-
-        dp[0] = "1".to_string();
-        dp[1] = "1".to_string();
-        dp[2] = "3".to_string();
+        let mut dp = vec!["1".to_string(), "1".to_string(), "3".to_string()];
 
         for i in 3..=n {
             dp[i % 3] = calculate_string(&dp[(i - 1) % 3], &dp[(i - 2) % 3]);
@@ -19,14 +15,14 @@ fn main() {
 }
 
 // dp[i] = dp[i-1] + dp[i-2] * 2
-fn calculate_string(x: &String, y: &String) -> String {
+fn calculate_string(x: &str, y: &str) -> String {
     let y = mul2(y);
     add(x, &y)
 }
 
-fn mul2(x: &String) -> String {
+fn mul2(x: &str) -> String {
     let mut carry = 0;
-    let mut result = String::new();
+    let mut result = String::with_capacity(x.len() + 1);
 
     let x_bytes = x.as_bytes();
     let mut x_idx = x.len() as isize - 1;
@@ -48,9 +44,9 @@ fn mul2(x: &String) -> String {
     result.chars().rev().collect()
 }
 
-fn add(x: &String, y: &String) -> String {
+fn add(x: &str, y: &str) -> String {
     let mut carry = 0;
-    let mut result = String::new();
+    let mut result = String::with_capacity(x.len().max(y.len()) + 1);
 
     let x_bytes = x.as_bytes();
     let y_bytes = y.as_bytes();
