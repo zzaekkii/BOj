@@ -1,28 +1,42 @@
 use std::io::{self, Read, Write};
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let mut nums = input.split_whitespace()
-        .map(|x| x.parse::<usize>().unwrap());
+    let mut buf = Vec::new();
+    io::stdin().read_to_end(&mut buf).unwrap();
+    let mut it = buf
+        .split(|b| b.is_ascii_whitespace())
+        .filter(|x| !x.is_empty())
+        .map(|bytes| {
+            let mut n = 0usize;
+            for &c in bytes {
+                n = n * 10 + (c - b'0') as usize;
+            }
+            n
+        });
 
-    let n: usize = nums.next().unwrap();
+    let n: usize = it.next().unwrap();
 
-    let bro: Vec<_> = nums.by_ref().take(n).collect();
+    let mut bro = vec![0usize; n];
+    for i in 0..n {
+        bro[i] = it.next().unwrap();
+    }
 
-    let safe = (0..n-1).try_fold(0usize, |max_dist, i| {
-        let power = nums.next().unwrap();
+    let mut max_dist = 0usize;
+    let mut safe = true;
+    
+    for i in 0..n-1 {
+        let power = it.next().unwrap();
         let dist = max_dist.max(bro[i] + power);
-
+    
         if dist < bro[i + 1] {
-            None
-        } else {
-            Some(dist)
+            safe = false;
+            break;
         }
-    });
+        max_dist = dist;
+    }
 
     let mut out = io::BufWriter::new(io::stdout().lock());
-    if n == 1 || safe.is_some() {
+    if n == 1 || safe {
         writeln!(out, "권병장님, 중대장님이 찾으십니다").unwrap();
     } else {
         writeln!(out, "엄마 나 전역 늦어질 것 같아").unwrap();
