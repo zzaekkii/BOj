@@ -1,0 +1,40 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut buf = Vec::new();
+    io::stdin().read_to_end(&mut buf).unwrap();
+    let mut it = buf
+        .split(|b| b.is_ascii_whitespace())
+        .filter(|x| !x.is_empty())
+        .map(|bytes| {
+            let mut n = 0usize;
+            for &c in bytes {
+                n = n * 10 + (c - b'0') as usize;
+            }
+            n
+        });
+
+    let n: usize = it.next().unwrap();
+    let x: usize = it.next().unwrap();
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    if x < n || x > n * 26 {
+        writeln!(out, "!").unwrap();
+        return;
+    }
+
+    let mut result = vec![b'A'; n];
+    let mut remain = x - n; // 남은 수를 뒤에서부터 분배
+    
+    for i in (0..n).rev() {
+        if remain == 0 {
+            break;
+        }
+
+        let add = remain.min(25);
+        result[i] += add as u8;
+        remain -= add;
+    }
+    
+    writeln!(out, "{}", String::from_utf8(result).unwrap()).unwrap();
+}
