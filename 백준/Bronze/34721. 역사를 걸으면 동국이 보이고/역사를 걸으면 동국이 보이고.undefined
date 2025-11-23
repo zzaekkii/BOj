@@ -1,0 +1,12 @@
+use std::io::{self, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let n: usize = input.trim().parse().unwrap();
+
+    let mut out = io::BufWriter::new(std::io::stdout());
+    for _ in 0..n {
+        writeln!(out, "I love DGU").unwrap();
+    }
+}
