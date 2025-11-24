@@ -1,0 +1,19 @@
+use std::io::{self, BufRead, Write};
+
+fn main() {
+    let mut lines = io::stdin().lock().lines();
+    
+    let prev = parse_to_minutes(&lines.next().unwrap().unwrap());
+    let next = parse_to_minutes(&lines.next().unwrap().unwrap());
+    
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", if prev < next {"YES"} else {"NO"}).unwrap();
+}
+
+fn parse_to_minutes(s: &str) -> usize {
+    let mut parts = s.split(":");
+    let hours: usize = parts.next().unwrap().parse().unwrap();
+    let minutes: usize = parts.next().unwrap().parse().unwrap();
+    
+    hours*60 + minutes
+}
