@@ -1,0 +1,28 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+    
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut k: usize = iter.next().unwrap().parse().unwrap();
+    let num = iter.next().unwrap().as_bytes();
+
+    let mut stack: Vec<u8> = Vec::with_capacity(n);
+
+    for &digit in num {
+        while k > 0 && !stack.is_empty() && *stack.last().unwrap() < digit {
+            stack.pop();
+            k -= 1;
+        }
+        stack.push(digit);
+    }
+
+    let length = stack.len() - k;
+    let result = String::from_utf8(stack[..length].to_vec()).unwrap();
+
+    let stdout = io::stdout();
+    let mut out = io::BufWriter::new(stdout.lock());
+    writeln!(out, "{}", result).unwrap();
+}
