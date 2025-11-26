@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Class{
+	int w, s, e;
+};
+
+int N, K, W, S, E;
+vector<Class> c;
+bool vis[5][11];
+int len,cur,ans;
+
+void dfs(int idx){
+	if(cur==K){
+		ans++;
+		return;
+	}
+	if(cur>K)return;
+	
+	for(int i=idx;i<len;i++){
+		int wk=c[i].w;
+		int st=c[i].s;
+		int en=c[i].e;
+		bool can_take=1;
+		
+		for(int i=st;i<=en;i++)
+			if(vis[wk][i]){
+				can_take=0;
+				break;
+			}
+		
+		if(can_take){
+			for(int i=st;i<=en;i++)
+				vis[wk][i]=1;
+			cur+=en-st+1;
+			
+			dfs(i+1);
+			
+			cur-=en-st+1;
+			for(int i=st;i<=en;i++)
+				vis[wk][i]=0;
+		}
+	}
+}
+
+int main(){
+	ios_base::sync_with_stdio(0); cin.tie(0);
+	cin >> N >> K;
+	
+	for(int i=0;i<N;i++){
+		cin >> W >> S >> E;
+		
+		if(W!=5) c.push_back({W,S,E});
+	}
+	
+	len=c.size();
+	
+	dfs(0);
+	
+	cout << ans;
+}
