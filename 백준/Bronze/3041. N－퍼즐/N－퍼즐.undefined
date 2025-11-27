@@ -1,0 +1,31 @@
+use std::io::{self, BufRead, Write};
+
+fn main() {
+    let mut lines = io::stdin().lock().lines();
+
+    let mut ans = 0usize;
+
+    let len = 4usize;
+    for x in 0..len {
+        let line = lines.next().unwrap().unwrap();
+        let chars: Vec<char> = line.trim().chars().collect();
+
+        for y in 0..len {
+            let c = chars[y];
+            
+            if !c.is_whitespace() && c != '.' {
+                let v = (c as u8 - b'A') as usize;
+
+                let tx = v / len;
+                let ty = v % len;
+
+                ans += (x as isize - tx as isize).abs() as usize
+                        + (y as isize - ty as isize).abs() as usize;
+            }
+        }
+    }
+
+    let stdout = io::stdout();
+    let mut out = io::BufWriter::new(stdout.lock());
+    writeln!(out, "{}", ans).unwrap();
+}
