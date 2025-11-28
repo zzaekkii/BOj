@@ -1,0 +1,57 @@
+use std::{collections::HashSet, io::{self, BufRead, Write}};
+
+fn main() {
+    let mut lines = io::stdin().lock().lines();
+
+    let mut separators = HashSet::new();
+    separators.insert(' ');
+
+    let n: usize = lines.next().unwrap().unwrap().parse().unwrap();
+    for c in lines.next().unwrap().unwrap().split_whitespace().take(n) {
+        separators.insert(c.chars().next().unwrap());
+    }
+    
+    let m: usize = lines.next().unwrap().unwrap().parse().unwrap();
+    for c in lines.next().unwrap().unwrap().split_whitespace().take(m) {
+        separators.insert(c.chars().next().unwrap());
+    }
+
+    let k: usize = lines.next().unwrap().unwrap().parse().unwrap();
+    let mergers: HashSet<char> = lines
+        .next().unwrap().unwrap()
+        .split_whitespace()
+        .take(k)
+        .map(|c| c.chars().next().unwrap())
+        .collect();
+
+    for c in &mergers {
+        separators.remove(c);
+    }
+
+    let s_len: usize = lines.next().unwrap().unwrap().parse().unwrap();
+    let target = lines.next().unwrap().unwrap();
+
+    let mut result = Vec::new();
+    let mut current = String::new();
+
+    for ch in target.chars() {
+        if separators.contains(&ch) {
+            if !current.is_empty() {
+                result.push(current.clone());
+                current.clear();
+            }
+        } else {
+            current.push(ch);
+        }
+    }
+
+    if !current.is_empty() {
+        result.push(current);
+    }
+
+    let stdout = io::stdout();
+    let mut out = io::BufWriter::new(stdout.lock());
+    for token in result {
+        writeln!(out, "{}", token).unwrap();
+    }
+}
