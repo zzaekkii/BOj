@@ -1,0 +1,63 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let h: usize = iter.next().unwrap().parse().unwrap();
+    let w: usize = iter.next().unwrap().parse().unwrap();
+    let n: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut stickers: Vec<(usize, usize)> = Vec::with_capacity(n);
+
+    for _ in 0..n {
+        let r: usize = iter.next().unwrap().parse().unwrap();
+        let c: usize = iter.next().unwrap().parse().unwrap();
+
+        if (r > h && r > w) || (c > h && c > w) {
+            continue;
+        }
+
+        stickers.push((r, c));
+    }
+
+    stickers.sort_by_key(|&(r, c)| std::cmp::Reverse(r * c));
+
+    let cnt = stickers.len();
+    let mut max_area = 0;
+    let areas: Vec<usize> = stickers.iter().map(|&(r, c)| r * c).collect();
+
+    for i in 0..cnt {
+        for j in i + 1..cnt {
+            let cur_area = areas[i] + areas[j];
+
+            if cur_area <= max_area {
+                break;
+            }
+
+            let (r1, c1) = stickers[i];
+            let (r2, c2) = stickers[j];
+
+            let rotations = [
+                (r1, c1, r2, c2),
+                (r1, c1, c2, r2),
+                (c1, r1, r2, c2),
+                (c1, r1, c2, r2),
+            ];
+
+            for &(a1, b1, a2, b2) in &rotations {
+                if a1 + a2 <= h && b1.max(b2) <= w {
+                    max_area = max_area.max(cur_area);
+                }
+
+                if a1.max(a2) <= h && b1 + b2 <= w {
+                    max_area = max_area.max(cur_area);
+                }
+            }
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", max_area).unwrap();
+}
