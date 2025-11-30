@@ -8,17 +8,14 @@ fn main() {
     let mut player: Vec<usize> = (1..=n).collect();
 
     let mut cur = 0usize;
-    let mut cnt = n;
 
     for t in 1..n {
-        let step = (((t as u64).pow(3) - 1) % (cnt as u64)) as usize;
-        cur = (cur + step) % cnt;
+        let alive = player.len();
 
-        for i in cur..(cnt - 1) {
-            player[i] = player[i + 1];
-        }
+        let step = (((t as u64).pow(3) - 1) % (alive as u64)) as usize;
+        cur = (cur + step) % alive;
 
-        cnt -= 1;
+        player.remove(cur);
     }
 
     let mut out = io::BufWriter::new(io::stdout().lock());
