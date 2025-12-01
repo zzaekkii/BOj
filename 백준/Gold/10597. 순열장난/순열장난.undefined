@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string S;
+int len;
+bool vis[51];
+bool flag;
+
+vector<int> V;
+
+void dfs(int idx, int cnt){
+	if(flag)return;
+	
+	if(idx==S.length()){
+		for(int i=1;i<=cnt;i++)
+			if(!vis[i])return;
+		
+		for(int a: V)
+			cout << a << ' ';
+
+		flag=1;
+		return;
+	}
+	
+	int cur=S[idx]-48;
+	
+	if(!vis[cur]&&cur>0){
+		vis[cur]=1;
+		V.emplace_back(cur);
+		
+		dfs(idx+1,cnt+1);
+		
+		V.pop_back();
+		vis[cur]=0;
+	}
+	
+	if(idx+1<len){
+		cur=cur*10+(S[idx+1]-48);
+		
+		if(!vis[cur]&&cur<=50&&cur>0){
+			vis[cur]=1;
+			V.emplace_back(cur);
+			
+			dfs(idx+2,cnt+1);
+			
+			V.pop_back();
+			vis[cur]=0;
+		}
+	}
+}
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> S;
+    
+    len=S.length();
+    
+    dfs(0,0);
+}
