@@ -1,0 +1,36 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let t: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..t {
+        let s = iter.next().unwrap().as_bytes();
+
+        let mut flag = check(s, 0, s.len() - 1);
+
+        writeln!(out, "{}", if flag { "YES" } else { "NO" }).unwrap();
+    }
+}
+
+fn check(s: &[u8], l: usize, r: usize) -> bool {
+    if l == r {
+        return true;
+    }
+
+    let pivot = (l + r) / 2;
+    let half = (r - l + 1) / 2;
+
+    for i in 1..=half {
+        if s[pivot - i] == s[pivot + i] {
+            return false;
+        }
+    }
+    
+    check(s, l, pivot - 1) && check(s, pivot + 1, r)
+}
