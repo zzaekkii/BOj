@@ -6,17 +6,38 @@ fn main() {
     let s = input.trim().as_bytes();
 
     let mut out = io::BufWriter::new(io::stdout().lock());
-    writeln!(out, "{}", if is_akaraka(s) { "AKARAKA" } else { "IPSELENTI" }).unwrap();
+    writeln!(
+        out,
+        "{}",
+        if is_akaraka(s) {
+            "AKARAKA"
+        } else {
+            "IPSELENTI"
+        }
+    )
+    .unwrap();
 }
 
-fn is_akaraka(s: &[u8]) -> bool {
-    let len = s.len();
-    if len <= 1 {
-        return true;
-    }
+fn is_akaraka(mut s: &[u8]) -> bool {
+    loop {
+        let len = s.len();
+        if len <= 1 {
+            return true;
+        }
+        
+        if !is_pal(s) {
+            return false;
+        }
 
+        let half = len / 2;
+        s = &s[..half];
+    }
+}
+
+fn is_pal(s: &[u8]) -> bool {
     let mut l = 0;
-    let mut r = len - 1;
+    let mut r = s.len() - 1;
+
     while l < r {
         if s[l] != s[r] {
             return false;
@@ -26,6 +47,5 @@ fn is_akaraka(s: &[u8]) -> bool {
         r -= 1;
     }
 
-    let half = len / 2;
-    is_akaraka(&s[..half]) && is_akaraka(&s[len - half..])
+    true
 }
