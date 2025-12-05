@@ -1,0 +1,31 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let s = input.trim().as_bytes();
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", if is_akaraka(s) { "AKARAKA" } else { "IPSELENTI" }).unwrap();
+}
+
+fn is_akaraka(s: &[u8]) -> bool {
+    let len = s.len();
+    if len <= 1 {
+        return true;
+    }
+
+    let mut l = 0;
+    let mut r = len - 1;
+    while l < r {
+        if s[l] != s[r] {
+            return false;
+        }
+
+        l += 1;
+        r -= 1;
+    }
+
+    let half = len / 2;
+    is_akaraka(&s[..half]) && is_akaraka(&s[len - half..])
+}
