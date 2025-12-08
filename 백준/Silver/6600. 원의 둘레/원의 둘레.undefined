@@ -1,0 +1,46 @@
+use std::io::{self, Read, Write};
+
+struct Coord {
+    x: f64,
+    y: f64,
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+
+    let nums: Vec<f64> = input
+        .split_whitespace()
+        .map(|n| n.parse::<f64>().unwrap())
+        .collect();
+
+    let points: Vec<Coord> = nums
+        .chunks_exact(2)
+        .map(|c| Coord { x: c[0], y: c[1] })
+        .collect();
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for chunk in points.chunks_exact(3) {
+        let p1 = &chunk[0];
+        let p2 = &chunk[1];
+        let p3 = &chunk[2];
+
+        let A = 2.0 * (p1.x - p2.x);
+        let B = 2.0 * (p1.y - p2.y);
+        let C = (p1.x.powi(2) - p2.x.powi(2)) + (p1.y.powi(2) - p2.y.powi(2));
+
+        let D = 2.0 * (p1.x - p3.x);
+        let E = 2.0 * (p1.y - p3.y);
+        let F = (p1.x.powi(2) - p3.x.powi(2)) + (p1.y.powi(2) - p3.y.powi(2));
+
+        let det = A * E - B * D;
+
+        let cx = (C * E - B * F) / det;
+        let cy = (A * F - C * D) / det;
+        // let cy = (C * D - A * F) / -det;
+
+        let r = ((p1.x - cx).powi(2) + (p1.y - cy).powi(2)).sqrt();
+        writeln!(out, "{:.2}", 2.0 * std::f64::consts::PI * r).unwrap();
+    }
+}
