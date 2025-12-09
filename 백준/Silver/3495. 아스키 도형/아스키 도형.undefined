@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+#define X first
+#define Y second
+using namespace std;
+
+int H, W;
+char board[101][101];
+char big_board[301][301];
+bool vis[301][301];
+
+int dx[]={0,1,0,-1}, dy[]={1,0,-1,0};
+queue<pair<int,int>> Q;
+int half, ans;
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> H >> W;
+
+    int H3=H*3, W3=W*3;
+    for(int i=0;i<H3;i++)
+    	for(int j=0;j<W3;j++)
+    		big_board[i][j]='.';
+    
+    for(int i=0;i<H;i++)
+    	for(int j=0;j<W;j++){
+    		cin >> board[i][j];
+    		
+    		if(board[i][j]=='/'||board[i][j]=='\\'){
+    			half++;
+    			
+    			if(board[i][j]=='/'){
+    				for(int k=0;k<3;k++){
+    					big_board[i*3+k][j*3+2-k]='/';
+    					vis[i*3+k][j*3+2-k]=1;
+					}
+				}
+    			else{
+    				for(int k=0;k<3;k++){
+    					big_board[i*3+k][j*3+k]='\\';
+    					vis[i*3+k][j*3+k]=1;
+					}
+				}
+			}
+		}
+    
+    ans+=half/2;
+    
+    int temp=0;
+    for(int i=0;i<H3;i++)
+    	for(int j=0;j<W3;j++){
+    		int area=0;
+    		bool outside=0;
+    		
+    		if(!vis[i][j]&&big_board[i][j]=='.'){
+    			vis[i][j]=1;
+    			Q.push({i,j});
+    			
+    			while(!Q.empty()){
+    				area++;
+    				auto cur=Q.front(); Q.pop();
+    				
+    				for(int dir=0;dir<4;dir++){
+    					int nx=cur.X+dx[dir];
+    					int ny=cur.Y+dy[dir];
+    					
+    					if(nx<0||nx>=H3||ny<0||ny>=W3){
+    						outside=1;
+    						continue;
+    					}
+    					
+    					if(!vis[nx][ny]){
+    						vis[nx][ny]=1;
+    						Q.push({nx,ny});
+						}
+					}
+				}
+				
+				if(!outside)temp+=area;
+			}
+		}
+	
+	temp-=half*3;
+	ans+=temp/9;
+	cout << ans;
+}
