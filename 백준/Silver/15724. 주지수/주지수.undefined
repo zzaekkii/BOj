@@ -16,7 +16,7 @@ fn main() {
     for i in 1..=n {
         for j in 1..=m {
             pre_sum[i][j] = iter.next().unwrap().parse().unwrap();
-            pre_sum[i][j] += pre_sum[i][j - 1];
+            pre_sum[i][j] += pre_sum[i][j - 1] + pre_sum[i - 1][j] - pre_sum[i - 1][j - 1];
         }
     }
 
@@ -30,9 +30,8 @@ fn main() {
         let y2: usize = iter.next().unwrap().parse().unwrap();
 
         let mut total = 0usize;
-        for i in x1..=x2 {
-            total += pre_sum[i][y2] - pre_sum[i][y1 - 1];
-        }
+        total =
+            pre_sum[x2][y2] - pre_sum[x1 - 1][y2] - pre_sum[x2][y1 - 1] + pre_sum[x1 - 1][y1 - 1];
 
         writeln!(out, "{}", total).unwrap();
     }
