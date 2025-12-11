@@ -7,10 +7,10 @@ fn main() {
 
     let m: usize = iter.next().unwrap().parse().unwrap();
 
-    let mut out = io::BufWriter::new(io::stdout().lock());
-
     let mut total = 0u64;
     let mut xor_result = 0u64;
+
+    let mut out = Vec::<u8>::with_capacity(m);
 
     for _ in 0..m {
         let opcode: usize = iter.next().unwrap().parse().unwrap();
@@ -28,9 +28,18 @@ fn main() {
                 total -= x;
                 xor_result ^= x;
             }
-            3 => writeln!(out, "{}", total).unwrap(),
-            4 => writeln!(out, "{}", xor_result).unwrap(),
+            3 => {
+                out.extend_from_slice(total.to_string().as_bytes());
+                out.push(b'\n');
+            }
+            4 => {
+                out.extend_from_slice(xor_result.to_string().as_bytes());
+                out.push(b'\n');
+            }
             _ => (),
         }
     }
+
+    let mut stdout = io::BufWriter::new(io::stdout());
+    stdout.write_all(&out).unwrap();
 }
