@@ -1,0 +1,36 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    let mut total = 0u64;
+    let mut xor_result = 0u64;
+
+    for _ in 0..m {
+        let opcode: usize = iter.next().unwrap().parse().unwrap();
+
+        match opcode {
+            1 => {
+                let x: u64 = iter.next().unwrap().parse().unwrap();
+
+                total += x;
+                xor_result ^= x;
+            }
+            2 => {
+                let x: u64 = iter.next().unwrap().parse().unwrap();
+
+                total -= x;
+                xor_result ^= x;
+            }
+            3 => writeln!(out, "{}", total).unwrap(),
+            4 => writeln!(out, "{}", xor_result).unwrap(),
+            _ => (),
+        }
+    }
+}
