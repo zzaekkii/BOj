@@ -1,0 +1,53 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+    
+    macro_rules! next_usize {
+        ($it:expr) => {
+            $it.next().unwrap().parse::<usize>().unwrap()
+        };
+    }
+    
+    let a = next_usize!(iter);
+    let b = next_usize!(iter);
+    let c = next_usize!(iter);
+
+    let s = next_usize!(iter);
+    let v = next_usize!(iter);
+
+    let l = next_usize!(iter);
+    
+    let mut need = (250 - l) * 100;
+    let mut time = 0usize;
+    
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    
+    let vip_minutes = v * 30;
+    let vip_exp = c * vip_minutes;
+    if need <= vip_exp {
+        writeln!(out, "{}", div_ceil(need, c)).unwrap();
+        return;
+    }
+    
+    time += vip_minutes;
+    need -= vip_exp;
+    
+    let tr_minutes = s * 30;
+    let tr_exp = b * tr_minutes;
+    if need <= tr_exp {
+        writeln!(out, "{}", time + div_ceil(need, b)).unwrap();
+        return;        
+    }
+    
+    time += tr_minutes;
+    need -= tr_exp;
+    
+    writeln!(out, "{}", time + div_ceil(need, a)).unwrap();
+}
+
+fn div_ceil(x: usize, y: usize) -> usize {
+    (x + y - 1) / y
+}
