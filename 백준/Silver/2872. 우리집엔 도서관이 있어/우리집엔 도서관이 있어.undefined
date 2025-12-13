@@ -1,0 +1,24 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+    
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut mx = 0usize;
+    let mut ans = 0usize;
+    
+    for _ in 0..n {
+        let book: usize = iter.next().unwrap().parse().unwrap();
+        
+        if book < mx {
+            ans = ans.max(book);
+        } else {
+            mx = mx.max(book);
+        }
+    }
+    
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
+}
