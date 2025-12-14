@@ -1,68 +1,67 @@
-#include <bits/stdc++.h>
-using namespace std;
+use std::io::{self, Read, Write};
 
-const int ROOT=1;
-int unused=2;
-const int MX=10000*10+5;
+const ROOT: usize = 1;
+const MX: usize = 10000 * 10 + 8;
 
-bool check[MX];
-int nxt[MX][10];
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
 
-int T, N;
-string S;
+    let t: usize = iter.next().unwrap().parse().unwrap();
 
-void init(){
-	unused = 2;
-	
-	for(int i=0;i<MX;i++){
-		check[i]=0;
-		
-		for(int j=0;j<10;j++)
-			nxt[i][j]=-1;
-	}
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    let mut check = vec![false; MX];
+    let mut nxt = vec![[-1i32; 10]; MX];
+
+    for _ in 0..t {
+        let mut unused = 2usize;
+
+        check = vec![false; MX];
+        nxt = vec![[-1i32; 10]; MX];
+
+        let n: usize = iter.next().unwrap().parse().unwrap();
+        let mut ans = true;
+
+        for _ in 0..n {
+            let s = iter.next().unwrap().as_bytes();
+
+            let mut cur = ROOT;
+
+            for &c in s {
+                let digit = char_to_int(c);
+
+                if nxt[cur][digit] == -1 {
+                    nxt[cur][digit] = unused as i32;
+                    unused += 1;
+                }
+
+                cur = nxt[cur][digit] as usize;
+
+                if check[cur] {
+                    ans = false;
+                }
+            }
+
+            for i in 0..10 {
+                if nxt[cur][i] != -1 {
+                    ans = false;
+                    break;
+                }
+            }
+
+            check[cur] = true;
+        }
+
+        if ans {
+            writeln!(out, "YES").unwrap();
+        } else {
+            writeln!(out, "NO").unwrap();
+        }
+    }
 }
 
-int char_to_int(char c){
-	return c-48;
-}
-
-bool insert(string& s){
-	int cur=ROOT;
-	
-	for(auto c: s){
-		if(nxt[cur][char_to_int(c)]==-1)
-			nxt[cur][char_to_int(c)]=unused++;
-		
-		cur=nxt[cur][char_to_int(c)];
-		
-		if(check[cur])return true;
-	}
-	
-	for(int i=0;i<10;i++)
-		if(nxt[cur][i]!=-1)
-			return true;
-	
-	check[cur]=true;
-	return false;
-}
-
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0);
-    cin >> T;
-    
-    while(T--){
-    	init();
-    	cin >> N;
-    	
-    	bool ans=true;
-    	
-    	for(int i=0;i<N;i++){
-    		cin >> S;
-    		
-    		if(insert(S))ans=false;
-    	}
-    	
-    	if(ans)cout << "YES\n";
-    	else cout << "NO\n";
-	}
+fn char_to_int(c: u8) -> usize {
+    (c - b'0') as usize
 }
