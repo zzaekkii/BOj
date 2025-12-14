@@ -18,9 +18,6 @@ fn main() {
     for _ in 0..t {
         let mut unused = 2usize;
 
-        check = vec![false; MX];
-        nxt = vec![[-1i32; 10]; MX];
-
         let n: usize = iter.next().unwrap().parse().unwrap();
         let mut ans = true;
 
@@ -53,12 +50,11 @@ fn main() {
 
             check[cur] = true;
         }
+        
+        writeln!(out, "{}", if ans { "YES" } else { "NO" }).unwrap();
 
-        if ans {
-            writeln!(out, "YES").unwrap();
-        } else {
-            writeln!(out, "NO").unwrap();
-        }
+        check = vec![false; MX];
+        nxt = vec![[-1i32; 10]; MX];
     }
 }
 
