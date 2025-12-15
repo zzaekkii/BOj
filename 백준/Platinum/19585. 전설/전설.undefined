@@ -1,0 +1,75 @@
+use std::collections::HashSet;
+use std::io::{self, Read, Write};
+
+const ROOT: usize = 1;
+const MX: usize = 4000 * 1000 + 8;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let c: usize = iter.next().unwrap().parse().unwrap();
+    let n: usize = iter.next().unwrap().parse().unwrap();
+
+    // Trie
+    let mut end = vec![false; MX];
+    let mut nxt = vec![[-1i32; 26]; MX];
+    let mut unused = 2usize;
+
+    for _ in 0..c {
+        let s = iter.next().unwrap();
+        let bytes = s.as_bytes();
+
+        let mut cur = ROOT;
+
+        for &co in bytes {
+            let digit = (co - b'a') as usize;
+
+            if nxt[cur][digit] == -1 {
+                nxt[cur][digit] = unused as i32;
+                unused += 1;
+            }
+
+            cur = nxt[cur][digit] as usize;
+        }
+
+        end[cur] = true;
+    }
+
+    // HashSet
+    let mut nick: HashSet<&str> = HashSet::with_capacity(n);
+    for _ in 0..n {
+        nick.insert(iter.next().unwrap());
+    }
+
+    let q: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..q {
+        let team = iter.next().unwrap();
+        let bytes = team.as_bytes();
+
+        let mut cur = ROOT;
+        let mut ans = false;
+
+        let len = bytes.len();
+        for i in 0..len {
+            let digit = (bytes[i] - b'a') as usize;
+            if nxt[cur][digit] == -1 {
+                break;
+            }
+
+            cur = nxt[cur][digit] as usize;
+
+            if end[cur] && i + 1 < len {
+                if nick.contains(&team[i + 1..]) {
+                    ans = true;
+                    break;
+                }
+            }
+        }
+
+        writeln!(out, "{}", if ans { "Yes" } else { "No" }).unwrap();
+    }
+}
