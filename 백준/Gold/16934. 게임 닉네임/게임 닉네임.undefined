@@ -1,0 +1,57 @@
+use std::io::{self, Read, Write};
+
+const ROOT: usize = 1;
+const MX: usize = 100_000 * 10 + 8;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    // Trie
+    let mut end = vec![0usize; MX];
+    let mut nxt = vec![[-1i32; 26]; MX];
+    let mut unused = 2usize;
+
+    for _ in 0..n {
+        let s = iter.next().unwrap();
+        let bytes = s.as_bytes();
+
+        let mut cur = ROOT;
+        let mut alias_len: Option<usize> = None;
+
+        for (i, &c) in bytes.iter().enumerate() {
+            let digit = (c - b'a') as usize;
+
+            if nxt[cur][digit] == -1 {
+                nxt[cur][digit] = unused as i32;
+                unused += 1;
+
+                if alias_len.is_none() {
+                    alias_len = Some(i + 1)
+                }
+            }
+
+            cur = nxt[cur][digit] as usize;
+        }
+
+        end[cur] += 1;
+
+        let mut result = String::new();
+
+        if let Some(len) = alias_len {
+            result.push_str(&s[..len]);
+        } else {
+            result.push_str(s);
+
+            if end[cur] > 1 {
+                result.push_str(&end[cur].to_string());
+            }
+        }
+
+        writeln!(out, "{}", result).unwrap();
+    }
+}
