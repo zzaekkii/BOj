@@ -40,18 +40,16 @@ fn main() {
 
         end[cur] += 1;
 
-        let mut result = String::new();
-
         if alias_len != 0 {
-            result.push_str(&s[..alias_len]);
+            out.write_all(&bytes[..alias_len]).unwrap();
         } else {
-            result.push_str(s);
+            out.write_all(bytes).unwrap();
 
             if end[cur] > 1 {
-                result.push_str(&end[cur].to_string());
+                write!(out, "{}", end[cur]).unwrap();
             }
         }
 
-        writeln!(out, "{}", result).unwrap();
+        out.write_all(b"\n").unwrap();
     }
 }
