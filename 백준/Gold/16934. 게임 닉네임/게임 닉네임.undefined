@@ -21,7 +21,7 @@ fn main() {
         let bytes = s.as_bytes();
 
         let mut cur = ROOT;
-        let mut alias_len: Option<usize> = None;
+        let mut alias_len = 0usize;
 
         for (i, &c) in bytes.iter().enumerate() {
             let digit = (c - b'a') as usize;
@@ -30,8 +30,8 @@ fn main() {
                 nxt[cur][digit] = unused as i32;
                 unused += 1;
 
-                if alias_len.is_none() {
-                    alias_len = Some(i + 1)
+                if alias_len == 0usize {
+                    alias_len = i + 1;
                 }
             }
 
@@ -42,8 +42,8 @@ fn main() {
 
         let mut result = String::new();
 
-        if let Some(len) = alias_len {
-            result.push_str(&s[..len]);
+        if alias_len != 0 {
+            result.push_str(&s[..alias_len]);
         } else {
             result.push_str(s);
 
