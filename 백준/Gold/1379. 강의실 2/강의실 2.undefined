@@ -1,0 +1,50 @@
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut lectures: Vec<(usize, usize, usize)> = Vec::with_capacity(n);
+
+    for _ in 0..n {
+        let idx: usize = iter.next().unwrap().parse::<usize>().unwrap() - 1;
+        let start: usize = iter.next().unwrap().parse().unwrap();
+        let end: usize = iter.next().unwrap().parse().unwrap();
+
+        lectures.push((start, end, idx));
+    }
+
+    lectures.sort_by_key(|&(s, _, _)| s);
+
+    let mut heap: BinaryHeap<Reverse<(usize, usize)>> = BinaryHeap::with_capacity(n);
+
+    let mut ans = vec![0usize; n];
+    let mut room_cnt = 0usize;
+
+    for (st, en, idx) in lectures {
+        if let Some(&Reverse((fin, room))) = heap.peek() {
+            if fin <= st {
+                heap.pop();
+                heap.push(Reverse((en, room)));
+                ans[idx] = room;
+                continue;
+            }
+        }
+
+        room_cnt += 1;
+        heap.push(Reverse((en, room_cnt)));
+        ans[idx] = room_cnt;
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    writeln!(out, "{}", room_cnt).unwrap();
+    for i in 0..n {
+        writeln!(out, "{}", ans[i]).unwrap();
+    }
+}
