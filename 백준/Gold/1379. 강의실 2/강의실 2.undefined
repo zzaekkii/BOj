@@ -41,10 +41,14 @@ fn main() {
         ans[idx] = room_cnt;
     }
 
-    let mut out = io::BufWriter::new(io::stdout().lock());
+    let mut out = String::with_capacity(n * 8);
+    out.push_str(&room_cnt.to_string());
+    out.push('\n');
 
-    writeln!(out, "{}", room_cnt).unwrap();
-    for i in 0..n {
-        writeln!(out, "{}", ans[i]).unwrap();
+    for i in ans {
+        out.push_str(&i.to_string());
+        out.push('\n');
     }
+
+    io::stdout().write_all(out.as_bytes()).unwrap();
 }
