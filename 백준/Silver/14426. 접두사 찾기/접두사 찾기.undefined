@@ -1,74 +1,65 @@
-#include <bits/stdc++.h>
-using namespace std;
+use std::io::{self, Read, Write};
 
-const int ROOT=1;
-int unused=2;
-const int MX=10000*500+5;
+const ROOT: usize = 1;
+const MX: usize = 10_000 * 500 + 8;
 
-bool check[MX];
-int nxt[MX][26];
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
 
-int N, M;
-string S;
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
 
-int ans;
+    // Trie
+    let mut end = vec![false; MX];
+    let mut nxt = vec![[-1i32; 26]; MX];
+    let mut unused = 2usize;
 
-void init(){
-	unused = 2;
-	
-	for(int i=0;i<MX;i++){
-		check[i]=0;
-		
-		for(int j=0;j<26;j++)
-			nxt[i][j]=-1;
-	}
-}
+    for _ in 0..n {
+        let s = iter.next().unwrap();
+        let bytes = s.as_bytes();
 
-void insert(string& s){
-	int cur=ROOT;
-	
-	for(auto c: s){
-		int digit=c-'a';
-		if(nxt[cur][digit]==-1)
-			nxt[cur][digit]=unused++;
-		
-		cur=nxt[cur][digit];
-	}
-	
-	check[cur]=true;
-}
+        let mut cur = ROOT;
 
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0);
-    cin >> N >> M;
-    
-    init();
-    
-    for(int i=0;i<N;i++){
-    	cin >> S;
-    	
-    	insert(S);
+        for &c in bytes {
+            let digit = (c - b'a') as usize;
+
+            if nxt[cur][digit] == -1 {
+                nxt[cur][digit] = unused as i32;
+                unused += 1;
+            }
+
+            cur = nxt[cur][digit] as usize;
+        }
+
+        end[cur] = true;
     }
-    
-    for(int i=0;i<M;i++){
-    	cin >> S;
-    	
-    	bool flag=1;
-    	int cur=ROOT;
-    	
-    	for(auto c: S){
-    		int digit=c-'a';
-    		
-    		if(nxt[cur][digit]==-1){
-    			flag=0;
-    			break;
-    		}
-    		
-    		cur=nxt[cur][digit];
-		}
-		
-		if(flag)ans++;
-	}
-	
-	cout << ans;
+
+    let mut ans = 0usize;
+    for _ in 0..m {
+        let s = iter.next().unwrap();
+        let bytes = s.as_bytes();
+
+        let mut cur = ROOT;
+        let mut flag = true;
+
+        for &c in bytes {
+            let digit = (c - b'a') as usize;
+
+            if nxt[cur][digit] == -1 {
+                flag = false;
+                break;
+            }
+
+            cur = nxt[cur][digit] as usize;
+        }
+
+        if flag {
+            ans += 1;
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
 }
