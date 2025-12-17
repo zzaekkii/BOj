@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int ROOT=1;
+int unused=2;
+const int MX=10000*500+5;
+
+bool check[MX];
+int nxt[MX][26];
+
+int N, M;
+string S;
+
+int ans;
+
+void init(){
+	unused = 2;
+	
+	for(int i=0;i<MX;i++){
+		check[i]=0;
+		
+		for(int j=0;j<26;j++)
+			nxt[i][j]=-1;
+	}
+}
+
+void insert(string& s){
+	int cur=ROOT;
+	
+	for(auto c: s){
+		int digit=c-'a';
+		if(nxt[cur][digit]==-1)
+			nxt[cur][digit]=unused++;
+		
+		cur=nxt[cur][digit];
+	}
+	
+	check[cur]=true;
+}
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> N >> M;
+    
+    init();
+    
+    for(int i=0;i<N;i++){
+    	cin >> S;
+    	
+    	insert(S);
+    }
+    
+    for(int i=0;i<M;i++){
+    	cin >> S;
+    	
+    	bool flag=1;
+    	int cur=ROOT;
+    	
+    	for(auto c: S){
+    		int digit=c-'a';
+    		
+    		if(nxt[cur][digit]==-1){
+    			flag=0;
+    			break;
+    		}
+    		
+    		cur=nxt[cur][digit];
+		}
+		
+		if(flag)ans++;
+	}
+	
+	cout << ans;
+}
