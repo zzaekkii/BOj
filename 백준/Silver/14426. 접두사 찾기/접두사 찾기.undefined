@@ -1,8 +1,5 @@
 use std::io::{self, Read, Write};
 
-const ROOT: usize = 1;
-const MX: usize = 10_000 * 500 + 8;
-
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
@@ -11,51 +8,20 @@ fn main() {
     let n: usize = iter.next().unwrap().parse().unwrap();
     let m: usize = iter.next().unwrap().parse().unwrap();
 
-    // Trie
-    let mut end = vec![false; MX];
-    let mut nxt = vec![[-1i32; 26]; MX];
-    let mut unused = 2usize;
+    let mut s: Vec<&str> = Vec::with_capacity(n);
 
     for _ in 0..n {
-        let s = iter.next().unwrap();
-        let bytes = s.as_bytes();
-
-        let mut cur = ROOT;
-
-        for &c in bytes {
-            let digit = (c - b'a') as usize;
-
-            if nxt[cur][digit] == -1 {
-                nxt[cur][digit] = unused as i32;
-                unused += 1;
-            }
-
-            cur = nxt[cur][digit] as usize;
-        }
-
-        end[cur] = true;
+        s.push(iter.next().unwrap());
     }
+
+    s.sort_unstable();
 
     let mut ans = 0usize;
     for _ in 0..m {
-        let s = iter.next().unwrap();
-        let bytes = s.as_bytes();
+        let target = iter.next().unwrap();
+        let pos = s.partition_point(|x| *x < target);
 
-        let mut cur = ROOT;
-        let mut flag = true;
-
-        for &c in bytes {
-            let digit = (c - b'a') as usize;
-
-            if nxt[cur][digit] == -1 {
-                flag = false;
-                break;
-            }
-
-            cur = nxt[cur][digit] as usize;
-        }
-
-        if flag {
+        if pos < s.len() && s[pos].starts_with(target) {
             ans += 1;
         }
     }
