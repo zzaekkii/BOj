@@ -1,7 +1,6 @@
 use std::io::{self, Read, Write};
 
 const ROOT: usize = 0;
-const MX: usize = 100_000 * 80 + 5;
 
 fn main() {
     let mut input = String::new();
@@ -15,7 +14,7 @@ fn main() {
 
         // Trie
         let mut next: Vec<Vec<(u8, usize)>> = Vec::new();
-        let mut end: Vec<bool> = Vec::with_capacity(MX);
+        let mut end: Vec<bool> = Vec::new();
 
         next.push(Vec::new());
         end.push(false);
