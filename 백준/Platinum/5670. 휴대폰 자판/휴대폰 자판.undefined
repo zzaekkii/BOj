@@ -1,0 +1,75 @@
+use std::io::{self, Read, Write};
+
+const ROOT: usize = 0;
+const MX: usize = 100_000 * 80 + 5;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    while let Some(n_str) = iter.next() {
+        let n: usize = n_str.parse().unwrap();
+        let mut words: Vec<&str> = Vec::with_capacity(n);
+
+        // Trie
+        let mut next: Vec<Vec<(u8, usize)>> = Vec::new();
+        let mut end: Vec<bool> = Vec::with_capacity(MX);
+
+        next.push(Vec::new());
+        end.push(false);
+
+        for _ in 0..n {
+            let word = iter.next().unwrap();
+            let bytes = word.as_bytes();
+            words.push(word);
+
+            let mut cur = ROOT;
+
+            for &c in bytes {
+                let ch = c - b'a';
+                let mut found = false;
+
+                for (x, nxt) in &next[cur] {
+                    if *x == ch {
+                        cur = *nxt;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if !found {
+                    let nxt = next.len();
+                    next.push(Vec::new());
+                    end.push(false);
+                    next[cur].push((ch, nxt));
+                    cur = nxt;
+                }
+            }
+
+            end[cur] = true;
+        }
+
+        let mut ans = 0f64;
+
+        for &w in &words {
+            let bytes = w.as_bytes();
+            let mut cur = ROOT;
+            let mut cnt = 0usize;
+
+            for (i, &c) in bytes.iter().enumerate() {
+                if i == 0 || next[cur].len() > 1 || end[cur] {
+                    cnt += 1;
+                }
+
+                let ch = c - b'a';
+                cur = next[cur].iter().find(|(x, _)| *x == ch).unwrap().1;
+            }
+
+            ans += cnt as f64
+        }
+        
+        writeln!(out, "{:.2}", ans / n as f64).unwrap();
+    }
+}
