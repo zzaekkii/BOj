@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N, K;
+int S, X, Y;
+int board[201][201];
+
+int dx[]={-1,0,1,0}, dy[]={0,1,0,-1};
+
+priority_queue<tuple<int,int,int>,vector<tuple<int,int,int>>,greater<tuple<int,int,int>>> pq;
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> N >> K;
+    
+    for(int i=0;i<N;i++)
+    	for(int j=0;j<N;j++){
+    		cin >> board[i][j];
+    		
+    		if(board[i][j]!=0)
+    			pq.push(make_tuple(board[i][j],i,j));
+    	}
+    
+    cin >> S >> X >> Y;
+    
+    while(S--){
+    	priority_queue<tuple<int,int,int>,vector<tuple<int,int,int>>,greater<tuple<int,int,int>>> tmp;
+    	
+    	while(!pq.empty()){
+    		int v, x, y;
+    		tie(v,x,y)=pq.top(); pq.pop();
+    		
+    		for(int dir=0;dir<4;dir++){
+    			int nx=x+dx[dir];
+    			int ny=y+dy[dir];
+    			
+    			if(nx>=0&&nx<N&&ny>=0&&ny<N&&!board[nx][ny]){
+    				board[nx][ny]=v;
+    				tmp.push(make_tuple(v,nx,ny));
+				}
+			}
+    	}
+    	
+    	pq=tmp;
+	}
+	
+	cout << board[X-1][Y-1];
+}
