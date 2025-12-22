@@ -1,0 +1,105 @@
+use std::io::{self, Read, Write};
+
+const MX: usize = 30;
+
+struct Node {
+    next: [i32; 2],
+    cnt: usize,
+}
+
+impl Node {
+    fn new() -> Self {
+        Node {
+            next: [-1i32; 2],
+            cnt: 0,
+        }
+    }
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new() -> Self {
+        Trie {
+            nodes: vec![Node::new()],
+        }
+    }
+
+    fn insert(&mut self, x: usize) {
+        let mut cur = 0usize;
+        self.nodes[cur].cnt += 1;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+
+            if self.nodes[cur].next[b] == -1 {
+                self.nodes[cur].next[b] = self.nodes.len() as i32;
+                self.nodes.push(Node::new());
+            }
+
+            cur = self.nodes[cur].next[b] as usize;
+            self.nodes[cur].cnt += 1;
+        }
+    }
+
+    fn erase(&mut self, x: usize) {
+        let mut cur = 0usize;
+        self.nodes[cur].cnt -= 1;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+
+            cur = self.nodes[cur].next[b] as usize;
+            self.nodes[cur].cnt -= 1;
+        }
+    }
+
+    fn find(&self, x: usize) -> usize {
+        let mut cur = 0usize;
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+            let target = b ^ 1;
+
+            let nxt = self.nodes[cur].next[target];
+            if nxt != -1 && self.nodes[nxt as usize].cnt > 0 {
+                res |= 1 << i;
+                cur = nxt as usize;
+            } else {
+                cur = self.nodes[cur].next[b] as usize;
+            }
+        }
+
+        res
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    let mut trie = Trie::new();
+    trie.insert(0);
+
+    for _ in 0..m {
+        let o: usize = iter.next().unwrap().parse().unwrap();
+        let x: usize = iter.next().unwrap().parse().unwrap();
+
+        match o {
+            1 => trie.insert(x),
+            2 => trie.erase(x),
+            3 => {
+                let ans = trie.find(x);
+                writeln!(out, "{}", ans).unwrap();
+            }
+            _ => {}
+        }
+    }
+}
