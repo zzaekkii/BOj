@@ -1,0 +1,129 @@
+use std::io::{self, Read, Write};
+
+#[derive(Default)]
+struct Node {
+    next: [Option<usize>; 26],
+    count: usize,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new() -> Self {
+        Trie {
+            nodes: vec![Node::default()],
+        }
+    }
+
+    fn add(&mut self, s: &str) {
+        let bytes = s.as_bytes();
+        let mut cur = 0usize;
+
+        for &c in bytes {
+            let idx = (c - b'a') as usize;
+
+            if self.nodes[cur].next[idx].is_none() {
+                self.nodes[cur].next[idx] = Some(self.nodes.len());
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[idx].unwrap();
+            self.nodes[cur].count += 1;
+        }
+    }
+
+    fn delete(&mut self, s: &str) {
+        let bytes = s.as_bytes();
+        let mut cur = 0usize;
+
+        for &c in bytes {
+            let idx = (c - b'a') as usize;
+
+            cur = self.nodes[cur].next[idx].unwrap();
+            self.nodes[cur].count -= 1;
+        }
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let mut trie_a = Trie::new();
+    let mut trie_b = Trie::new();
+
+    let q: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout());
+
+    for _ in 0..q {
+        let cmd = iter.next().unwrap();
+
+        match cmd {
+            "add" => {
+                let target = iter.next().unwrap();
+                let s = iter.next().unwrap();
+
+                if target == "A" {
+                    trie_a.add(s);
+                } else {
+                    let rev: String = s.bytes().rev().map(|c| c as char).collect();
+                    trie_b.add(&rev);
+                }
+            }
+            "delete" => {
+                let target = iter.next().unwrap();
+                let s = iter.next().unwrap();
+
+                if target == "A" {
+                    trie_a.delete(s);
+                } else {
+                    let rev: String = s.bytes().rev().map(|c| c as char).collect();
+                    trie_b.delete(&rev);
+                }
+            }
+            "find" => {
+                let s = iter.next().unwrap();
+                let bytes = s.as_bytes();
+                let len = bytes.len();
+
+                let mut b_pos = vec![None; len + 1];
+                let mut cur = 0usize;
+                b_pos[len] = Some(0usize);
+
+                for i in (0..len).rev() {
+                    let idx = (bytes[i] - b'a') as usize;
+                    
+                    match trie_b.nodes[cur].next[idx] {
+                        Some(nxt) => {
+                            cur = nxt;
+                            b_pos[i] = Some(cur);
+                        }
+                        None => break,
+                    }
+                }
+
+                let mut ans = 0usize;
+                let mut cur_a = 0usize;
+
+                for i in 0..len - 1 {
+                    let idx = (bytes[i] - b'a') as usize;
+
+                    match trie_a.nodes[cur_a].next[idx] {
+                        Some(nxt) => cur_a = nxt,
+                        None => break,
+                    }
+
+                    if let Some(cur_b) = b_pos[i + 1] {
+                        ans += trie_a.nodes[cur_a].count * trie_b.nodes[cur_b].count;
+                    }
+                }
+
+                writeln!(out, "{}", ans).unwrap();
+            }
+            _ => {},
+        }
+    }
+}
