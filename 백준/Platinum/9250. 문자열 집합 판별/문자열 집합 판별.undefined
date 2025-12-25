@@ -3,7 +3,7 @@ use std::io::{self, Read, Write};
 
 #[derive(Default)]
 struct Node {
-    next: [Option<usize>; 26],
+    next: [usize; 26],
     fail: usize,
     end: bool,
 }
@@ -26,12 +26,12 @@ impl Trie {
         for &c in bytes {
             let idx = (c - b'a') as usize;
 
-            if self.nodes[cur].next[idx].is_none() {
-                self.nodes[cur].next[idx] = Some(self.nodes.len());
+            if self.nodes[cur].next[idx] == 0 {
+                self.nodes[cur].next[idx] = self.nodes.len();
                 self.nodes.push(Node::default());
             }
 
-            cur = self.nodes[cur].next[idx].unwrap();
+            cur = self.nodes[cur].next[idx];
         }
 
         self.nodes[cur].end = true;
@@ -42,30 +42,30 @@ impl Trie {
         let mut queue = VecDeque::new();
 
         for i in 0..26 {
-            if let Some(nxt) = self.nodes[0].next[i] {
+            let nxt = self.nodes[0].next[i];
+
+            if nxt != 0 {
                 queue.push_back(nxt);
             }
         }
 
         while let Some(cur) = queue.pop_front() {
+            let f = self.nodes[cur].fail;
+
             for i in 0..26 {
-                if let Some(nxt) = self.nodes[cur].next[i] {
-                    let mut f = self.nodes[cur].fail;
+                let nxt = self.nodes[cur].next[i];
 
-                    while f != 0 && self.nodes[f].next[i].is_none() {
-                        f = self.nodes[f].fail;
-                    }
+                if nxt != 0 {
+                    // 자식에서의 고민은 이미 부모에서 이뤄진 상태
+                    self.nodes[nxt].fail = self.nodes[f].next[i];
 
-                    if let Some(x) = self.nodes[f].next[i] {
-                        self.nodes[nxt].fail = x;
-                    }
-
-                    // 좌표 압축 느낌임
                     if self.nodes[self.nodes[nxt].fail].end {
                         self.nodes[nxt].end = true;
                     }
 
                     queue.push_back(nxt);
+                } else {
+                    self.nodes[cur].next[i] = self.nodes[f].next[i];
                 }
             }
         }
@@ -98,15 +98,7 @@ fn main() {
 
         for &c in bytes {
             let idx = (c - b'a') as usize;
-
-            // 접미사가 짧아지는 방향
-            while cur != 0 && trie.nodes[cur].next[idx].is_none() {
-                cur = trie.nodes[cur].fail;
-            }
-
-            if let Some(nxt) = trie.nodes[cur].next[idx] {
-                cur = nxt;
-            }
+            cur = trie.nodes[cur].next[idx];
 
             if trie.nodes[cur].end {
                 found = true;
