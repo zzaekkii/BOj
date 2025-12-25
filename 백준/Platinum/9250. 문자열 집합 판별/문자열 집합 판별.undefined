@@ -1,0 +1,119 @@
+use std::collections::VecDeque;
+use std::io::{self, Read, Write};
+
+#[derive(Default)]
+struct Node {
+    next: [Option<usize>; 26],
+    fail: usize,
+    end: bool,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new() -> Self {
+        Self {
+            nodes: vec![Node::default()],
+        }
+    }
+
+    fn insert(&mut self, s: &str) {
+        let bytes = s.as_bytes();
+        let mut cur = 0usize;
+
+        for &c in bytes {
+            let idx = (c - b'a') as usize;
+
+            if self.nodes[cur].next[idx].is_none() {
+                self.nodes[cur].next[idx] = Some(self.nodes.len());
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[idx].unwrap();
+        }
+
+        self.nodes[cur].end = true;
+    }
+
+    // aho-corasick
+    fn build_fail(&mut self) {
+        let mut queue = VecDeque::new();
+
+        for i in 0..26 {
+            if let Some(nxt) = self.nodes[0].next[i] {
+                queue.push_back(nxt);
+            }
+        }
+
+        while let Some(cur) = queue.pop_front() {
+            for i in 0..26 {
+                if let Some(nxt) = self.nodes[cur].next[i] {
+                    let mut f = self.nodes[cur].fail;
+
+                    while f != 0 && self.nodes[f].next[i].is_none() {
+                        f = self.nodes[f].fail;
+                    }
+
+                    if let Some(x) = self.nodes[f].next[i] {
+                        self.nodes[nxt].fail = x;
+                    }
+
+                    // 좌표 압축 느낌임
+                    if self.nodes[self.nodes[nxt].fail].end {
+                        self.nodes[nxt].end = true;
+                    }
+
+                    queue.push_back(nxt);
+                }
+            }
+        }
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut trie = Trie::new();
+
+    for _ in 0..n {
+        let s = iter.next().unwrap();
+        trie.insert(s);
+    }
+
+    trie.build_fail();
+
+    let q: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..q {
+        let text = iter.next().unwrap();
+        let bytes = text.as_bytes();
+        let mut found = false;
+        let mut cur = 0usize;
+
+        for &c in bytes {
+            let idx = (c - b'a') as usize;
+
+            // 접미사가 짧아지는 방향
+            while cur != 0 && trie.nodes[cur].next[idx].is_none() {
+                cur = trie.nodes[cur].fail;
+            }
+
+            if let Some(nxt) = trie.nodes[cur].next[idx] {
+                cur = nxt;
+            }
+
+            if trie.nodes[cur].end {
+                found = true;
+                break;
+            }
+        }
+
+        writeln!(out, "{}", if found { "YES" } else { "NO" }).unwrap();
+    }
+}
