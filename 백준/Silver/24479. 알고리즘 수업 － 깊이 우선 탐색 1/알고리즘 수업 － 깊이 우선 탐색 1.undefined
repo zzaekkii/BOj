@@ -27,28 +27,27 @@ fn main() {
     let mut result = vec![0; n + 1];
     let mut cnt = 0usize;
 
-    dfs(&graph, &mut visited, &mut result, &mut cnt, r);
+    let mut stack = Vec::with_capacity(n);
+    stack.push(r);
+
+    while let Some(cur) = stack.pop() {
+        if visited[cur] {
+            continue;
+        }
+
+        cnt += 1;
+        visited[cur] = true;
+        result[cur] = cnt;
+
+        for &nxt in graph[cur].iter().rev() {
+            if !visited[nxt] {
+                stack.push(nxt);
+            }
+        }
+    }
 
     let mut out = io::BufWriter::new(io::stdout().lock());
     for i in 1..=n {
         writeln!(out, "{}", result[i]).unwrap();
-    }
-}
-
-fn dfs(
-    graph: &Vec<Vec<usize>>,
-    visited: &mut Vec<bool>,
-    result: &mut Vec<usize>,
-    cnt: &mut usize,
-    cur: usize,
-) {
-    *cnt += 1;
-    visited[cur] = true;
-    result[cur] = *cnt;
-
-    for &nxt in &graph[cur] {
-        if !visited[nxt] {
-            dfs(graph, visited, result, cnt, nxt);
-        }
     }
 }
