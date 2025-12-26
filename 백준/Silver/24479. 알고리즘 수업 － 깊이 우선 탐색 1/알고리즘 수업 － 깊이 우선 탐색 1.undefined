@@ -1,0 +1,54 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let r: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut graph = vec![Vec::new(); n + 1];
+
+    for _ in 0..m {
+        let u: usize = iter.next().unwrap().parse().unwrap();
+        let v: usize = iter.next().unwrap().parse().unwrap();
+
+        graph[u].push(v);
+        graph[v].push(u);
+    }
+
+    for i in 1..=n {
+        graph[i].sort_unstable();
+    }
+
+    let mut visited = vec![false; n + 1];
+    let mut result = vec![0; n + 1];
+    let mut cnt = 0usize;
+
+    dfs(&graph, &mut visited, &mut result, &mut cnt, r);
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for i in 1..=n {
+        writeln!(out, "{}", result[i]).unwrap();
+    }
+}
+
+fn dfs(
+    graph: &Vec<Vec<usize>>,
+    visited: &mut Vec<bool>,
+    result: &mut Vec<usize>,
+    cnt: &mut usize,
+    cur: usize,
+) {
+    *cnt += 1;
+    visited[cur] = true;
+    result[cur] = *cnt;
+
+    for &nxt in &graph[cur] {
+        if !visited[nxt] {
+            dfs(graph, visited, result, cnt, nxt);
+        }
+    }
+}
