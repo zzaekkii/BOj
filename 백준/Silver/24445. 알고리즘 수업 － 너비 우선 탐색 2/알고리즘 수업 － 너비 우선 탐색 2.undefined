@@ -1,0 +1,53 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let r: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut graph = vec![Vec::new(); n + 1];
+
+    for _ in 0..m {
+        let u: usize = iter.next().unwrap().parse().unwrap();
+        let v: usize = iter.next().unwrap().parse().unwrap();
+
+        graph[u].push(v);
+        graph[v].push(u);
+    }
+
+    for i in 1..=n {
+        graph[i].sort_unstable_by(|a, b| b.cmp(a));
+    }
+
+    let mut visited = vec![false; n + 1];
+    let mut result = vec![0usize; n + 1];
+    let mut cnt = 0usize;
+
+    let mut queue = VecDeque::new();
+    queue.push_back(r);
+    visited[r] = true;
+
+    while let Some(cur) = queue.pop_front() {
+        cnt += 1;
+        result[cur] = cnt;
+
+        for &nxt in &graph[cur] {
+            if !visited[nxt] {
+                visited[nxt] = true;
+                queue.push_back(nxt);
+            }
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for i in 1..=n {
+        writeln!(out, "{}", result[i]).unwrap();
+    }
+}
