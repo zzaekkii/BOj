@@ -26,21 +26,18 @@ fn main() {
         graph[i].sort_unstable_by(|a, b| b.cmp(a));
     }
 
-    let mut visited = vec![false; n + 1];
-    let mut result = vec![0usize; n + 1];
-    let mut cnt = 0usize;
+    let mut visited = vec![0usize; n + 1];
+    let mut cnt = 1usize;
 
     let mut queue = VecDeque::new();
     queue.push_back(r);
-    visited[r] = true;
+    visited[r] = cnt;
 
     while let Some(cur) = queue.pop_front() {
-        cnt += 1;
-        result[cur] = cnt;
-
         for &nxt in &graph[cur] {
-            if !visited[nxt] {
-                visited[nxt] = true;
+            if visited[nxt] == 0 {
+                cnt += 1;
+                visited[nxt] = cnt;
                 queue.push_back(nxt);
             }
         }
@@ -48,6 +45,6 @@ fn main() {
 
     let mut out = io::BufWriter::new(io::stdout().lock());
     for i in 1..=n {
-        writeln!(out, "{}", result[i]).unwrap();
+        writeln!(out, "{}", visited[i]).unwrap();
     }
 }
