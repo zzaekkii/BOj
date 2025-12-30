@@ -1,0 +1,42 @@
+use std::{
+    collections::HashMap,
+    io::{self, Read, Write},
+};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut prev_ranks: HashMap<usize, i32> = HashMap::with_capacity(n);
+    for rank in 0..n {
+        let player_number: usize = iter.next().unwrap().parse().unwrap();
+        prev_ranks.insert(player_number, rank as i32);
+    }
+
+    let mut ans: Vec<usize> = Vec::new();
+    let mut max_increased = 0;
+
+    for rank in 0..n {
+        let player_number: usize = iter.next().unwrap().parse().unwrap();
+        let prev_rank = prev_ranks.get(&player_number).unwrap();
+
+        let gap = prev_rank - rank as i32;
+
+        if gap > max_increased {
+            max_increased = gap;
+            ans.clear();
+            ans.push(player_number);
+        } else if gap == max_increased {
+            ans.push(player_number);
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for player in ans {
+        out.write_all(player.to_string().as_bytes()).unwrap();
+        out.write_all(b" ").unwrap();
+    }
+}
