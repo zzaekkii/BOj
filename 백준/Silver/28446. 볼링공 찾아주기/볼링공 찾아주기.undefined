@@ -1,0 +1,34 @@
+use std::{
+    collections::HashMap,
+    io::{self, Read, Write},
+};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut lockers: HashMap<usize, usize> = HashMap::with_capacity(m);
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..m {
+        let o: usize = iter.next().unwrap().parse().unwrap();
+
+        match o {
+            1 => {
+                let x: usize = iter.next().unwrap().parse().unwrap();
+                let w: usize = iter.next().unwrap().parse().unwrap();
+
+                lockers.insert(w, x);
+            }
+            2 => {
+                let w: usize = iter.next().unwrap().parse().unwrap();
+                out.write_all(lockers.get(&w).unwrap().to_string().as_bytes())
+                    .unwrap();
+                out.write_all(b"\n").unwrap();
+            }
+            _ => unreachable!(),
+        }
+    }
+}
