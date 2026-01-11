@@ -1,0 +1,15 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let a: usize = iter.next().unwrap().parse().unwrap();
+    let t: usize = iter.next().unwrap().parse().unwrap();
+
+    let anime_power: i32 = 10 + 2 * (25 - a as i32 + t as i32);
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", anime_power.max(0)).unwrap();
+}
