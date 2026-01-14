@@ -10,7 +10,6 @@ const ROOT: usize = 1;
 #[derive(Default)]
 struct Node {
     next: [usize; 2],
-    cnt: usize,
 }
 
 struct Trie {
@@ -18,8 +17,8 @@ struct Trie {
 }
 
 impl Trie {
-    fn new() -> Self {
-        let mut nodes = Vec::new();
+    fn new(n: usize) -> Self {
+        let mut nodes = Vec::with_capacity(n * (MX + 1) + 2);
         nodes.push(Node::default());
         nodes.push(Node::default());
         Trie { nodes }
@@ -27,7 +26,6 @@ impl Trie {
 
     fn insert(&mut self, x: usize) {
         let mut cur = ROOT;
-        self.nodes[cur].cnt += 1;
 
         for i in (0..=MX).rev() {
             let b = (x >> i) & 1usize;
@@ -38,11 +36,10 @@ impl Trie {
             }
 
             cur = self.nodes[cur].next[b];
-            self.nodes[cur].cnt += 1;
         }
     }
 
-    fn find(&mut self, x: usize) -> usize {
+    fn find(&self, x: usize) -> usize {
         let mut cur = ROOT;
         let mut res = 0usize;
 
@@ -51,7 +48,7 @@ impl Trie {
             let target = b ^ 1;
 
             let nxt = self.nodes[cur].next[target];
-            if nxt != NONE && self.nodes[nxt].cnt > 0 {
+            if nxt != NONE {
                 res |= 1 << i;
                 cur = nxt;
             } else {
@@ -69,7 +66,7 @@ fn main() {
     let mut iter = input.split_ascii_whitespace();
 
     let n: usize = iter.next().unwrap().parse().unwrap();
-    let mut trie = Trie::new();
+    let mut trie = Trie::new(n);
     let mut nums = Vec::<usize>::with_capacity(n);
 
     for _ in 0..n {
