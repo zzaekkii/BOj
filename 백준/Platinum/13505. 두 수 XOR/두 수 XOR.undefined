@@ -1,0 +1,89 @@
+use std::{
+    default,
+    io::{self, Read, Write},
+};
+
+const MX: usize = 30;
+const NONE: usize = 0;
+const ROOT: usize = 1;
+
+#[derive(Default)]
+struct Node {
+    next: [usize; 2],
+    cnt: usize,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new() -> Self {
+        let mut nodes = Vec::new();
+        nodes.push(Node::default());
+        nodes.push(Node::default());
+        Trie { nodes }
+    }
+
+    fn insert(&mut self, x: usize) {
+        let mut cur = ROOT;
+        self.nodes[cur].cnt += 1;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+
+            if self.nodes[cur].next[b] == NONE {
+                self.nodes[cur].next[b] = self.nodes.len();
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[b];
+            self.nodes[cur].cnt += 1;
+        }
+    }
+
+    fn find(&mut self, x: usize) -> usize {
+        let mut cur = ROOT;
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+            let target = b ^ 1;
+
+            let nxt = self.nodes[cur].next[target];
+            if nxt != NONE && self.nodes[nxt].cnt > 0 {
+                res |= 1 << i;
+                cur = nxt;
+            } else {
+                cur = self.nodes[cur].next[b];
+            }
+        }
+
+        res
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut trie = Trie::new();
+    let mut nums = Vec::<usize>::with_capacity(n);
+
+    for _ in 0..n {
+        let num: usize = iter.next().unwrap().parse().unwrap();
+        nums.push(num);
+        trie.insert(num);
+    }
+
+    let mut ans = 0usize;
+    for num in nums {
+        let res = trie.find(num);
+        ans = ans.max(res);
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
+}
