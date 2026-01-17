@@ -1,0 +1,91 @@
+use std::io::{self, Read, Write};
+
+const MX: usize = 20;
+const NONE: usize = 0;
+const ROOT: usize = 1;
+
+#[derive(Default)]
+struct Node {
+    next: [usize; 2],
+    cnt: usize,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new(n: usize) -> Self {
+        let mut nodes = Vec::with_capacity(n * (MX + 1) + 2);
+        nodes.push(Node::default());
+        nodes.push(Node::default());
+        Trie { nodes }
+    }
+
+    fn insert(&mut self, x: usize) {
+        let mut cur = ROOT;
+        self.nodes[cur].cnt += 1;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+
+            if self.nodes[cur].next[b] == NONE {
+                self.nodes[cur].next[b] = self.nodes.len();
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[b];
+            self.nodes[cur].cnt += 1;
+        }
+    }
+
+    fn find_smaller_than_k(&self, x: usize, k: usize) -> usize {
+        let mut cur = ROOT;
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            if cur == NONE {
+                break;
+            }
+
+            let xb = (x >> i) & 1usize;
+            let kb = (k >> i) & 1usize;
+
+            if kb == 0 {
+                cur = self.nodes[cur].next[xb];
+            } else {
+                let target = self.nodes[cur].next[xb];
+                if target != NONE {
+                    res += self.nodes[target].cnt;
+                }
+                cur = self.nodes[cur].next[xb ^ 1];
+            }
+        }
+
+        res
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let k: usize = iter.next().unwrap().parse().unwrap();
+    let mut trie = Trie::new(n);
+    trie.insert(0);
+
+    let mut pre_xor = 0usize;
+    let mut ans = 0usize;
+
+    for _ in 0..n {
+        let num: usize = iter.next().unwrap().parse().unwrap();
+        pre_xor ^= num;
+        ans += trie.find_smaller_than_k(pre_xor, k);
+        trie.insert(pre_xor);
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
+}
