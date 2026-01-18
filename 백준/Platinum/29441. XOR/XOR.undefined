@@ -1,0 +1,82 @@
+use std::{
+    f32::consts::E,
+    io::{self, Read, Write},
+};
+
+const MX: usize = 30;
+const NONE: usize = 0;
+const ROOT: usize = 1;
+
+#[derive(Default)]
+struct Node {
+    next: [usize; 2],
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new(n: usize) -> Self {
+        let mut nodes = Vec::with_capacity(n * (MX + 1) + 2);
+        nodes.push(Node::default());
+        nodes.push(Node::default());
+        Trie { nodes }
+    }
+
+    fn insert(&mut self, x: usize) {
+        let mut cur = ROOT;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+
+            if self.nodes[cur].next[b] == NONE {
+                self.nodes[cur].next[b] = self.nodes.len();
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[b];
+        }
+    }
+
+    fn find(&self, x: usize) -> usize {
+        let mut cur = ROOT;
+        let mut val = 0usize;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+            let target = b ^ 1;
+            let nxt = self.nodes[cur].next[target];
+
+            if nxt == NONE {
+                cur = self.nodes[cur].next[b];
+                val |= b << i;
+            } else {
+                val |= target << i;
+                cur = nxt;
+            }
+        }
+
+        val
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut trie = Trie::new(n);
+    for _ in 0..n {
+        let num: usize = iter.next().unwrap().parse().unwrap();
+        trie.insert(num);
+    }
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for _ in 0..m {
+        let num: usize = iter.next().unwrap().parse().unwrap();
+        write!(out, "{} ", trie.find(num)).unwrap();
+    }
+}
