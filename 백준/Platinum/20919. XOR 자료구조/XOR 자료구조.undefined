@@ -1,0 +1,189 @@
+use std::io::{self, Read, Write};
+
+const MX: usize = 25;
+const NONE: usize = 0;
+const ROOT: usize = 1;
+
+#[derive(Default)]
+struct Node {
+    next: [usize; 2],
+    cnt: usize,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+    unique_cnt: usize,
+}
+
+impl Trie {
+    fn new(n: usize) -> Self {
+        let mut nodes = Vec::with_capacity(n * (MX + 1) + 2);
+        nodes.push(Node::default());
+        nodes.push(Node::default());
+        Trie {
+            nodes,
+            unique_cnt: 0usize,
+        }
+    }
+
+    fn add(&mut self, x: usize) -> usize {
+        let mut cur = ROOT;
+        self.nodes[cur].cnt += 1;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+
+            if self.nodes[cur].next[b] == NONE {
+                self.nodes[cur].next[b] = self.nodes.len();
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[b];
+            self.nodes[cur].cnt += 1;
+        }
+
+        if self.nodes[cur].cnt == 1 {
+            self.unique_cnt += 1;
+        }
+
+        self.unique_cnt
+    }
+
+    fn find_min(&self, x: usize) -> usize {
+        let mut cur = ROOT;
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            let prefer = (x >> i) & 1usize;
+            let other = prefer ^ 1;
+
+            let nxt = self.nodes[cur].next[prefer];
+            if nxt != NONE && self.nodes[nxt].cnt > 0 {
+                cur = nxt;
+            } else {
+                res |= 1 << i;
+                cur = self.nodes[cur].next[other];
+            }
+        }
+
+        res
+    }
+
+    fn find_max(&self, x: usize) -> usize {
+        let mut cur = ROOT;
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            let b = (x >> i) & 1usize;
+            let prefer = b ^ 1;
+
+            let nxt = self.nodes[cur].next[prefer];
+            if nxt != NONE && self.nodes[nxt].cnt > 0 {
+                res |= 1 << i;
+                cur = nxt;
+            } else {
+                cur = self.nodes[cur].next[b];
+            }
+        }
+
+        res
+    }
+
+    fn remove_min(&mut self) -> usize {
+        let mut cur = ROOT;
+        let mut path = Vec::with_capacity(MX + 1);
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            path.push(cur);
+            let target = self.nodes[cur].next[0];
+
+            if target != NONE && self.nodes[target].cnt > 0 {
+                cur = target;
+            } else {
+                res |= 1 << i;
+                cur = self.nodes[cur].next[1];
+            }
+        }
+        path.push(cur);
+
+        let target_cnt = self.nodes[cur].cnt;
+        for p in path {
+            self.nodes[p].cnt -= target_cnt;
+        }
+
+        self.unique_cnt -= 1;
+        res
+    }
+
+    fn remove_max(&mut self) -> usize {
+        let mut cur = ROOT;
+        let mut path = Vec::with_capacity(MX + 1);
+        let mut res = 0usize;
+
+        for i in (0..=MX).rev() {
+            path.push(cur);
+            let target = self.nodes[cur].next[1];
+
+            if target != NONE && self.nodes[target].cnt > 0 {
+                res |= 1 << i;
+                cur = target;
+            } else {
+                cur = self.nodes[cur].next[0];
+            }
+        }
+        path.push(cur);
+
+        let target_cnt = self.nodes[cur].cnt;
+        for p in path {
+            self.nodes[p].cnt -= target_cnt;
+        }
+
+        self.unique_cnt -= 1;
+        res
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    let t: usize = iter.next().unwrap().parse().unwrap();
+    for _ in 0..t {
+        let n: usize = iter.next().unwrap().parse().unwrap();
+        let q: usize = iter.next().unwrap().parse().unwrap();
+        let mut trie = Trie::new(n);
+
+        for _ in 0..n {
+            let num: usize = iter.next().unwrap().parse().unwrap();
+            trie.add(num);
+        }
+
+        for _ in 0..q {
+            let query: usize = iter.next().unwrap().parse().unwrap();
+            match query {
+                1 => {
+                    let v: usize = iter.next().unwrap().parse().unwrap();
+                    writeln!(out, "{}", trie.find_min(v)).unwrap();
+                }
+                2 => {
+                    let v: usize = iter.next().unwrap().parse().unwrap();
+                    writeln!(out, "{}", trie.find_max(v)).unwrap();
+                }
+                3 => {
+                    let v: usize = iter.next().unwrap().parse().unwrap();
+                    writeln!(out, "{}", trie.add(v)).unwrap();
+                }
+                4 => {
+                    writeln!(out, "{}", trie.remove_min()).unwrap();
+                }
+                5 => {
+                    writeln!(out, "{}", trie.remove_max()).unwrap();
+                }
+                _ => unreachable!(),
+            }
+        }
+    }
+}
