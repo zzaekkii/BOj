@@ -1,0 +1,98 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+};
+
+const ROOT: usize = 0;
+
+#[derive(Default)]
+struct Node {
+    next: [Option<usize>; 26],
+    end: bool,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new(n: usize) -> Self {
+        let mut nodes = Vec::new();
+        nodes.push(Node::default());
+        Trie { nodes }
+    }
+
+    fn insert(&mut self, word: &[u8]) {
+        let mut cur = ROOT;
+
+        for &w in word {
+            let idx = (w - b'a') as usize;
+
+            if self.nodes[cur].next[idx].is_none() {
+                let nxt = self.nodes.len();
+                self.nodes[cur].next[idx] = Some(nxt);
+                self.nodes.push(Node::default());
+            }
+
+            cur = self.nodes[cur].next[idx].unwrap();
+        }
+
+        self.nodes[cur].end = true;
+    }
+
+    fn is_typo(&self, word: &[u8]) -> bool {
+        let mut stack = VecDeque::new();
+        stack.push_back((ROOT, 0usize, false));
+
+        while let Some((cur, pos, is_del)) = stack.pop_back() {
+            if pos == word.len() {
+                if is_del && self.nodes[cur].end {
+                    return true;
+                }
+                continue;
+            }
+
+            let idx = (word[pos] - b'a') as usize;
+
+            if let Some(nxt) = self.nodes[cur].next[idx] {
+                stack.push_back((nxt, pos + 1, is_del));
+            }
+
+            if !is_del {
+                stack.push_back((cur, pos + 1, true));
+            }
+        }
+
+        false
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut words = Vec::<&str>::with_capacity(n);
+    let mut trie = Trie::new(n);
+
+    for _ in 0..n {
+        let word = iter.next().unwrap();
+        words.push(word);
+        trie.insert(word.as_bytes());
+    }
+
+    let mut found = false;
+
+    for &word in &words {
+        if trie.is_typo(word.as_bytes()) {
+            writeln!(out, "{}", word).unwrap();
+            found = true;
+        }
+    }
+
+    if !found {
+        writeln!(out, "NO TYPOS").unwrap();
+    }
+}
