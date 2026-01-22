@@ -1,0 +1,75 @@
+use std::{
+    collections::BTreeMap,
+    io::{self, Read, Write},
+};
+
+const ROOT: usize = 0;
+
+#[derive(Default)]
+struct Node {
+    next: BTreeMap<String, usize>,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new() -> Self {
+        let mut nodes = Vec::new();
+        nodes.push(Node::default());
+        Trie { nodes }
+    }
+
+    fn insert(&mut self, path: impl IntoIterator<Item = String>) {
+        let mut cur = ROOT;
+
+        for name in path {
+            let nxt = if let Some(&idx) = self.nodes[cur].next.get(&name) {
+                idx
+            } else {
+                let idx = self.nodes.len();
+                self.nodes.push(Node::default());
+                self.nodes[cur].next.insert(name, idx);
+                idx
+            };
+            cur = nxt;
+        }
+    }
+
+    fn get_disk_tree(&self) -> String {
+        let mut disk_tree = String::new();
+        self.dfs(0, 0, &mut disk_tree);
+        disk_tree
+    }
+
+    fn dfs(&self, cur: usize, depth: usize, disk_tree: &mut String) {
+        for (name, &nxt) in self.nodes[cur].next.iter() {
+            for _ in 0..depth {
+                disk_tree.push(' ');
+            }
+
+            disk_tree.push_str(name);
+            disk_tree.push('\n');
+            self.dfs(nxt, depth + 1, disk_tree);
+        }
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut trie = Trie::new();
+
+    for _ in 0..n {
+        let path = iter.next().unwrap();
+        let values = path.split('\\').map(|s| s.to_string());
+        trie.insert(values);
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    write!(out, "{}", trie.get_disk_tree()).unwrap();
+}
