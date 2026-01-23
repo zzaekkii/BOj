@@ -1,0 +1,78 @@
+use std::{
+    collections::BTreeMap,
+    io::{self, Read, Write},
+};
+
+const ROOT: usize = 0;
+
+#[derive(Default)]
+struct Node {
+    next: BTreeMap<String, usize>,
+}
+
+struct Trie {
+    nodes: Vec<Node>,
+}
+
+impl Trie {
+    fn new() -> Self {
+        let mut nodes = Vec::new();
+        nodes.push(Node::default());
+        Trie { nodes }
+    }
+
+    fn insert(&mut self, path: Vec<String>) {
+        let mut cur = ROOT;
+
+        for name in path {
+            let nxt = if let Some(&idx) = self.nodes[cur].next.get(&name) {
+                idx
+            } else {
+                let idx = self.nodes.len();
+                self.nodes.push(Node::default());
+                self.nodes[cur].next.insert(name, idx);
+                idx
+            };
+            cur = nxt;
+        }
+    }
+
+    fn render(&self) -> String {
+        let mut result = String::new();
+        self.dfs(ROOT, 0, &mut result);
+        result
+    }
+
+    fn dfs(&self, cur: usize, depth: usize, result: &mut String) {
+        for (name, &nxt) in self.nodes[cur].next.iter() {
+            for _ in 0..depth {
+                result.push_str("--");
+            }
+
+            result.push_str(name);
+            result.push('\n');
+            self.dfs(nxt, depth + 1, result);
+        }
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut trie = Trie::new();
+
+    for _ in 0..n {
+        let k: usize = iter.next().unwrap().parse().unwrap();
+        let mut path = Vec::with_capacity(k);
+        for _ in 0..k {
+            path.push(iter.next().unwrap().to_string());
+        }
+        trie.insert(path);
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    write!(out, "{}", trie.render()).unwrap();
+}
