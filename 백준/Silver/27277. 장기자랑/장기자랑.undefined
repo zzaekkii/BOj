@@ -1,0 +1,40 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut soldiers = Vec::<i32>::with_capacity(n + 1);
+    soldiers.push(0);
+    for _ in 0..n {
+        let soldier: i32 = iter.next().unwrap().parse().unwrap();
+        soldiers.push(soldier);
+    }
+
+    soldiers.sort();
+    let mut soldier: VecDeque<i32> = soldiers.into_iter().collect();
+
+    let mut post = soldier.pop_back().unwrap();
+    let mut ans = 0i32;
+    let mut bigger = false;
+
+    while !soldier.is_empty() {
+        let cur = if bigger {
+            soldier.pop_back().unwrap()
+        } else {
+            soldier.pop_front().unwrap()
+        };
+
+        ans += (post - cur).max(0);
+        post = cur;
+        bigger = !bigger;
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
+}
