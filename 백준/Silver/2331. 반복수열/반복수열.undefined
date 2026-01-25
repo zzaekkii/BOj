@@ -1,0 +1,45 @@
+use std::{
+    collections::HashSet,
+    io::{self, Read, Write},
+    ops::Index,
+};
+
+fn calculate(x: usize, p: u32) -> usize {
+    let mut temp = x;
+    let mut result = 0usize;
+
+    while temp != 0 {
+        result += (temp % 10).pow(p);
+        temp /= 10usize;
+    }
+
+    result
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let a: usize = iter.next().unwrap().parse().unwrap();
+    let p: u32 = iter.next().unwrap().parse().unwrap();
+
+    let mut ans = 0usize;
+    let mut arr = Vec::<usize>::new();
+    arr.push(a);
+
+    loop {
+        let cur = *arr.last().unwrap();
+        let result = calculate(cur, p);
+
+        if let Some(idx) = arr.iter().position(|&x| x == result) {
+            ans = idx;
+            break;
+        }
+
+        arr.push(result)
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
+}
