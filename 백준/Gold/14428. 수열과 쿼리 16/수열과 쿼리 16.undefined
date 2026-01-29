@@ -1,0 +1,96 @@
+use std::io::{self, Read, Write};
+
+const INF: usize = usize::MAX;
+
+#[inline]
+fn update_value(seg: &mut Vec<(usize, usize)>, size: usize, idx: usize, value: usize) {
+    let mut p = size + idx - 1;
+    seg[p] = (value, idx);
+
+    while p > 1 {
+        p >>= 1;
+        seg[p] = if seg[p * 2] <= seg[p * 2 + 1] {
+            seg[p * 2]
+        } else {
+            seg[p * 2 + 1]
+        };
+    }
+}
+
+#[inline]
+fn find_minimum(seg: &mut Vec<(usize, usize)>, size: usize, st: usize, en: usize) -> usize {
+    let mut left = size + st - 1;
+    let mut right = size + en - 1;
+    let mut res = (INF, INF);
+
+    while left <= right {
+        if left & 1 == 1 {
+            if seg[left] < res {
+                res = seg[left];
+            }
+            left += 1;
+        }
+        if right & 1 == 0 {
+            if seg[right] < res {
+                res = seg[right];
+            }
+            right -= 1;
+        }
+
+        left >>= 1;
+        right >>= 1;
+    }
+
+    res.1
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut size = 1usize;
+    while size < n {
+        size <<= 1;
+    }
+
+    let mut seg = vec![(INF, INF); size * 2];
+    for i in 0..n {
+        let v: usize = iter.next().unwrap().parse().unwrap();
+        seg[size + i] = (v, i + 1);
+    }
+
+    for i in (1..size).rev() {
+        seg[i] = if seg[i * 2] <= seg[i * 2 + 1] {
+            seg[i * 2]
+        } else {
+            seg[i * 2 + 1]
+        };
+    }
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..m {
+        let q: usize = iter.next().unwrap().parse().unwrap();
+
+        match q {
+            1 => {
+                let idx: usize = iter.next().unwrap().parse().unwrap();
+                let value: usize = iter.next().unwrap().parse().unwrap();
+
+                update_value(&mut seg, size, idx, value);
+            }
+            2 => {
+                let st: usize = iter.next().unwrap().parse().unwrap();
+                let en: usize = iter.next().unwrap().parse().unwrap();
+
+                let minimum = find_minimum(&mut seg, size, st, en);
+                writeln!(out, "{}", minimum).unwrap();
+            }
+            _ => unreachable!(),
+        }
+    }
+}
