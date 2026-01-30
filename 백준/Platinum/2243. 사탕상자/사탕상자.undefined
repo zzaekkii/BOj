@@ -1,0 +1,64 @@
+use std::io::{self, Read, Write};
+
+const SIZE: usize = 1 << 20;
+
+#[inline]
+fn update_segment(seg: &mut Vec<i32>, flavor: usize, count: i32) {
+    let mut idx = SIZE + flavor - 1;
+    seg[idx] += count;
+
+    while idx > 1 {
+        idx >>= 1;
+        seg[idx] = seg[idx * 2] + seg[idx * 2 + 1];
+    }
+}
+
+#[inline]
+fn find_kth_flavor(seg: &mut Vec<i32>, mut rank: usize) -> usize {
+    let mut idx = 1usize;
+
+    while idx < SIZE {
+        let left = idx << 1;
+        let right = left + 1;
+
+        if seg[left] >= rank as i32 {
+            idx = left;
+        } else {
+            rank -= seg[left] as usize;
+            idx = right;
+        }
+    }
+
+    let flavor = idx - SIZE + 1;
+    update_segment(seg, flavor, -1);
+    flavor
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    let mut seg = vec![0i32; SIZE * 2];
+
+    for _ in 0..n {
+        let q: usize = iter.next().unwrap().parse().unwrap();
+
+        match q {
+            1 => {
+                let rank: usize = iter.next().unwrap().parse().unwrap();
+                let flavor = find_kth_flavor(&mut seg, rank);
+                writeln!(out, "{}", flavor).unwrap();
+            }
+            2 => {
+                let flavor: usize = iter.next().unwrap().parse().unwrap();
+                let count: i32 = iter.next().unwrap().parse().unwrap();
+                update_segment(&mut seg, flavor, count);
+            }
+            _ => unreachable!(),
+        }
+    }
+}
