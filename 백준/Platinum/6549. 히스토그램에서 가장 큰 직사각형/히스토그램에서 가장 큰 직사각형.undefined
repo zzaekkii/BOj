@@ -1,0 +1,47 @@
+use std::io::{self, Read, Write};
+
+const INF: usize = usize::MAX;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    loop {
+        let n: usize = iter.next().unwrap().parse().unwrap();
+        if n == 0 {
+            break;
+        }
+
+        let mut h = Vec::<usize>::with_capacity(n);
+        for _ in 0..n {
+            h.push(iter.next().unwrap().parse().unwrap());
+        }
+
+        let mut stack = Vec::<(usize, usize)>::new();
+        let mut ans = 0usize;
+
+        for i in 0..n {
+            let mut start_idx = i;
+
+            while let Some(&(st, height)) = stack.last() {
+                if height <= h[i] {
+                    break;
+                }
+
+                stack.pop();
+                ans = ans.max(height * (i - st));
+                start_idx = st;
+            }
+
+            stack.push((start_idx, h[i]));
+        }
+
+        while let Some((st, height)) = stack.pop() {
+            ans = ans.max(height * (n - st));
+        }
+
+        writeln!(out, "{}", ans).unwrap();
+    }
+}
