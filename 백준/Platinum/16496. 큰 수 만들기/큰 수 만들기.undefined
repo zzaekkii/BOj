@@ -1,0 +1,31 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut nums = Vec::<&str>::with_capacity(n);
+    for _ in 0..n {
+        nums.push(iter.next().unwrap());
+    }
+
+    nums.sort_by(|a, b| {
+        let ab = format!("{}{}", a, b);
+        let ba = format!("{}{}", b, a);
+        ba.cmp(&ab)
+    });
+
+    let mut ans = String::new();
+    for num in nums {
+        ans.push_str(num);
+    }
+
+    if ans.starts_with('0') {
+        ans = "0".to_string();
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", ans).unwrap();
+}
