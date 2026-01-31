@@ -11,7 +11,7 @@ fn main() {
         nums.push(iter.next().unwrap());
     }
 
-    nums.sort_by(|a, b| {
+    nums.sort_unstable_by(|a, b| {
         let ab = format!("{}{}", a, b);
         let ba = format!("{}{}", b, a);
         ba.cmp(&ab)
