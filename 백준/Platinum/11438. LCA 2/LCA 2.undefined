@@ -1,23 +1,20 @@
-use std::{
-    collections::VecDeque,
-    io::{self, Read, Write},
-};
+use std::{collections::VecDeque, io::{self, Read, Write}};
 
+const LOG: usize = 17;
 const ROOT: usize = 1;
 
 fn get_lca(
     mut a: usize,
     mut b: usize,
-    depth: &Vec<usize>,
-    parent: &Vec<Vec<usize>>,
-    log: usize,
+    depth: &[usize],
+    parent: &[Vec<usize>],
 ) -> usize {
     if depth[b] < depth[a] {
         std::mem::swap(&mut a, &mut b);
     }
-
+    
     let diff = depth[b] - depth[a];
-    for k in 0..log {
+    for k in 0..LOG {
         if diff & (1 << k) != 0 {
             b = parent[k][b];
         }
@@ -27,7 +24,7 @@ fn get_lca(
         return a;
     }
 
-    for k in (0..log).rev() {
+    for k in (0..LOG).rev() {
         if parent[k][a] != parent[k][b] {
             a = parent[k][a];
             b = parent[k][b];
@@ -43,10 +40,9 @@ fn main() {
     let mut iter = input.split_ascii_whitespace();
 
     let n: usize = iter.next().unwrap().parse().unwrap();
-    let log = (n as f64).log2().ceil() as usize + 1;
     let mut graph = vec![Vec::<usize>::new(); n + 1];
     let mut depth = vec![0usize; n + 1];
-    let mut parent = vec![vec![0usize; n + 1]; log];
+    let mut parent = vec![vec![0usize; n + 1]; LOG];
 
     for _ in 0..n - 1 {
         let a: usize = iter.next().unwrap().parse().unwrap();
@@ -72,7 +68,7 @@ fn main() {
         }
     }
 
-    for k in 1..log {
+    for k in 1..LOG {
         for i in 1..=n {
             let p = parent[k - 1][i];
             parent[k][i] = if p == 0 { 0 } else { parent[k - 1][p] };
@@ -85,6 +81,6 @@ fn main() {
         let a: usize = iter.next().unwrap().parse().unwrap();
         let b: usize = iter.next().unwrap().parse().unwrap();
 
-        writeln!(out, "{}", get_lca(a, b, &depth, &parent, log)).unwrap();
+        writeln!(out, "{}", get_lca(a, b, &depth, &parent)).unwrap();
     }
 }
