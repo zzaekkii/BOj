@@ -1,0 +1,68 @@
+use std::io::{self, Read, Write};
+
+fn find_min_and_max(
+    mut left: usize,
+    mut right: usize,
+    seg: &[(usize, usize)],
+    size: usize,
+) -> (usize, usize) {
+    let mut mn = usize::MAX;
+    let mut mx = usize::MIN;
+
+    left += size;
+    right += size;
+
+    while left <= right {
+        if (left & 1) == 1 {
+            mn = mn.min(seg[left].0);
+            mx = mx.max(seg[left].1);
+            left += 1;
+        }
+
+        if (right & 1) == 0 {
+            mn = mn.min(seg[right].0);
+            mx = mx.max(seg[right].1);
+            right -= 1;
+        }
+
+        left >>= 1;
+        right >>= 1;
+    }
+
+    (mn, mx)
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut size = 1;
+    while size < n {
+        size <<= 1;
+    }
+
+    let mut seg = vec![(usize::MAX, usize::MIN); size * 2];
+    for i in 0..n {
+        let num = iter.next().unwrap().parse().unwrap();
+        seg[size + i] = (num, num);
+    }
+
+    for i in (1..size).rev() {
+        seg[i] = (
+            seg[i * 2].0.min(seg[i * 2 + 1].0),
+            seg[i * 2].1.max(seg[i * 2 + 1].1),
+        );
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for _ in 0..m {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+        let (mn, mx) = find_min_and_max(a - 1, b - 1, &seg, size);
+        writeln!(out, "{} {}", mn, mx).unwrap();
+    }
+}
