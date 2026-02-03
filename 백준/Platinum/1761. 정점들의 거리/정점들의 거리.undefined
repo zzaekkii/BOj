@@ -1,0 +1,89 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+};
+
+const LOG: usize = 16;
+const ROOT: usize = 1;
+
+fn get_lca(mut a: usize, mut b: usize, depth: &[usize], parent: &[Vec<usize>]) -> usize {
+    if depth[b] < depth[a] {
+        std::mem::swap(&mut a, &mut b);
+    }
+
+    let diff = depth[b] - depth[a];
+    for k in (0..LOG).rev() {
+        if diff & (1 << k) != 0 {
+            b = parent[b][k];
+        }
+    }
+
+    if a == b {
+        return a;
+    }
+
+    for k in (0..LOG).rev() {
+        if parent[a][k] != parent[b][k] {
+            a = parent[a][k];
+            b = parent[b][k];
+        }
+    }
+
+    parent[a][0]
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut graph = vec![Vec::<(usize, i32)>::new(); n + 1];
+    let mut depth = vec![0usize; n + 1];
+    let mut dist = vec![0i32; n + 1];
+    let mut parent = vec![vec![0usize; LOG]; n + 1];
+
+    for _ in 0..n - 1 {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+        let d: i32 = iter.next().unwrap().parse().unwrap();
+
+        graph[a].push((b, d));
+        graph[b].push((a, d));
+    }
+
+    let mut q = VecDeque::new();
+    q.push_back(ROOT);
+    parent[ROOT][0] = 0;
+    depth[ROOT] = 0;
+
+    while let Some(cur) = q.pop_front() {
+        for &(nxt, d) in &graph[cur] {
+            if nxt == parent[cur][0] {
+                continue;
+            }
+
+            parent[nxt][0] = cur;
+            depth[nxt] = depth[cur] + 1;
+            dist[nxt] = dist[cur] + d;
+            q.push_back(nxt);
+        }
+    }
+
+    for k in 1..LOG {
+        for i in 1..=n {
+            let p = parent[i][k - 1];
+            parent[i][k] = if p == 0 { 0 } else { parent[p][k - 1] };
+        }
+    }
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for _ in 0..m {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+        let lca = get_lca(a, b, &depth, &parent);
+        let ans = dist[a] + dist[b] - 2 * dist[lca];
+        writeln!(out, "{}", ans).unwrap();
+    }
+}
