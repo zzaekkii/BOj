@@ -6,6 +6,7 @@ use std::{
 const LOG: usize = 16;
 const ROOT: usize = 1;
 
+#[inline]
 fn get_lca(mut a: usize, mut b: usize, depth: &[usize], parent: &[Vec<usize>]) -> usize {
     if depth[b] < depth[a] {
         std::mem::swap(&mut a, &mut b);
@@ -14,7 +15,7 @@ fn get_lca(mut a: usize, mut b: usize, depth: &[usize], parent: &[Vec<usize>]) -
     let diff = depth[b] - depth[a];
     for k in 0..LOG {
         if diff & (1 << k) != 0 {
-            b = parent[b][k];
+            b = parent[k][b];
         }
     }
 
@@ -23,13 +24,13 @@ fn get_lca(mut a: usize, mut b: usize, depth: &[usize], parent: &[Vec<usize>]) -
     }
 
     for k in (0..LOG).rev() {
-        if parent[a][k] != parent[b][k] {
-            a = parent[a][k];
-            b = parent[b][k];
+        if parent[k][a] != parent[k][b] {
+            a = parent[k][a];
+            b = parent[k][b];
         }
     }
 
-    parent[a][0]
+    parent[0][a]
 }
 
 fn main() {
@@ -41,7 +42,7 @@ fn main() {
     let mut graph = vec![Vec::<(usize, i32)>::new(); n + 1];
     let mut depth = vec![0usize; n + 1];
     let mut dist = vec![0i32; n + 1];
-    let mut parent = vec![vec![0usize; LOG]; n + 1];
+    let mut parent = vec![vec![0usize; n + 1]; LOG];
 
     for _ in 0..n - 1 {
         let a: usize = iter.next().unwrap().parse().unwrap();
@@ -54,16 +55,16 @@ fn main() {
 
     let mut q = VecDeque::new();
     q.push_back(ROOT);
-    parent[ROOT][0] = 0;
+    parent[0][ROOT] = 0;
     depth[ROOT] = 0;
 
     while let Some(cur) = q.pop_front() {
         for &(nxt, d) in &graph[cur] {
-            if nxt == parent[cur][0] {
+            if nxt == parent[0][cur] {
                 continue;
             }
 
-            parent[nxt][0] = cur;
+            parent[0][nxt] = cur;
             depth[nxt] = depth[cur] + 1;
             dist[nxt] = dist[cur] + d;
             q.push_back(nxt);
@@ -72,8 +73,8 @@ fn main() {
 
     for k in 1..LOG {
         for i in 1..=n {
-            let p = parent[i][k - 1];
-            parent[i][k] = if p == 0 { 0 } else { parent[p][k - 1] };
+            let p = parent[k - 1][i];
+            parent[k][i] = if p == 0 { 0 } else { parent[k - 1][p] };
         }
     }
 
