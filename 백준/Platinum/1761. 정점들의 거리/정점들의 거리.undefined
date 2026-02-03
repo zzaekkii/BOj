@@ -12,7 +12,7 @@ fn get_lca(mut a: usize, mut b: usize, depth: &[usize], parent: &[Vec<usize>]) -
     }
 
     let diff = depth[b] - depth[a];
-    for k in (0..LOG).rev() {
+    for k in 0..LOG {
         if diff & (1 << k) != 0 {
             b = parent[b][k];
         }
