@@ -4,7 +4,7 @@ use std::{
     usize,
 };
 
-const LOG: usize = 18;
+const LOG: usize = 17;
 const ROOT: usize = 1;
 
 #[inline]
