@@ -1,0 +1,114 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+    usize,
+};
+
+const LOG: usize = 18;
+const ROOT: usize = 1;
+
+#[inline]
+fn get_dists(
+    mut a: usize,
+    mut b: usize,
+    depth: &[usize],
+    parent: &[Vec<usize>],
+    min_edge: &[Vec<usize>],
+    max_edge: &[Vec<usize>],
+) -> (usize, usize) {
+    let mut mn = usize::MAX;
+    let mut mx = 0usize;
+
+    if depth[b] < depth[a] {
+        std::mem::swap(&mut a, &mut b);
+    }
+
+    let diff = depth[b] - depth[a];
+    for k in 0..LOG {
+        if diff & (1 << k) != 0 {
+            mn = mn.min(min_edge[k][b]);
+            mx = mx.max(max_edge[k][b]);
+            b = parent[k][b];
+        }
+    }
+
+    if a == b {
+        return (mn, mx);
+    }
+
+    for k in (0..LOG).rev() {
+        if parent[k][a] != parent[k][b] {
+            mn = mn.min(min_edge[k][a]).min(min_edge[k][b]);
+            mx = mx.max(max_edge[k][a]).max(max_edge[k][b]);
+            a = parent[k][a];
+            b = parent[k][b];
+        }
+    }
+
+    mn = mn.min(min_edge[0][a]).min(min_edge[0][b]);
+    mx = mx.max(max_edge[0][a]).max(max_edge[0][b]);
+    (mn, mx)
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut graph = vec![Vec::<(usize, usize)>::new(); n + 1];
+
+    for _ in 0..n - 1 {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+        let d: usize = iter.next().unwrap().parse().unwrap();
+
+        graph[a].push((b, d));
+        graph[b].push((a, d));
+    }
+
+    let mut depth = vec![0usize; n + 1];
+    let mut parent = vec![vec![0usize; n + 1]; LOG];
+    let mut min_edge = vec![vec![usize::MAX; n + 1]; LOG];
+    let mut max_edge = vec![vec![0usize; n + 1]; LOG];
+
+    let mut q = VecDeque::new();
+    q.push_back(ROOT);
+    parent[0][ROOT] = 0;
+    depth[ROOT] = 0;
+
+    while let Some(cur) = q.pop_front() {
+        for &(nxt, d) in &graph[cur] {
+            if nxt == parent[0][cur] {
+                continue;
+            }
+
+            parent[0][nxt] = cur;
+            depth[nxt] = depth[cur] + 1;
+            min_edge[0][nxt] = d;
+            max_edge[0][nxt] = d;
+
+            q.push_back(nxt);
+        }
+    }
+
+    for k in 1..LOG {
+        for i in 1..=n {
+            let p = parent[k - 1][i];
+
+            parent[k][i] = parent[k - 1][p];
+            min_edge[k][i] = min_edge[k - 1][i].min(min_edge[k - 1][p]);
+            max_edge[k][i] = max_edge[k - 1][i].max(max_edge[k - 1][p]);
+        }
+    }
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for _ in 0..m {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+
+        let (mn, mx) = get_dists(a, b, &depth, &parent, &min_edge, &max_edge);
+        writeln!(out, "{} {}", mn, mx).unwrap();
+    }
+}
