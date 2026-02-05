@@ -1,7 +1,6 @@
-use std::{
-    collections::HashMap,
-    io::{self, Read, Write},
-};
+use std::io::{self, Read, Write};
+
+const MAX: usize = 1_000_001;
 
 #[inline]
 fn increase_cnt(seg: &mut Vec<usize>, size: usize, idx: usize) {
@@ -51,10 +50,10 @@ fn main() {
         a.push(num);
     }
 
-    let mut position = HashMap::<usize, usize>::with_capacity(n);
+    let mut position = vec![0usize; MAX];
     for i in 1..=n {
         let num: usize = iter.next().unwrap().parse().unwrap();
-        position.insert(num, i);
+        position[num] = i;
     }
 
     let mut size = 1;
@@ -65,9 +64,9 @@ fn main() {
     let mut total_cross = 0usize;
     let mut seg = vec![0usize; size * 2];
     for &v in &a {
-        let b_idx = position.get(&v).unwrap();
+        let b_idx = position[v];
         total_cross += find_cross_cnt(&seg, size, b_idx + 1, n);
-        increase_cnt(&mut seg, size, *b_idx);
+        increase_cnt(&mut seg, size, b_idx);
     }
 
     let mut out = io::BufWriter::new(io::stdout().lock());
