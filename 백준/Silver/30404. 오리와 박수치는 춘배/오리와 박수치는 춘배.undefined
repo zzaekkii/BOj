@@ -7,15 +7,11 @@ fn main() {
 
     let n: usize = iter.next().unwrap().parse().unwrap();
     let k: usize = iter.next().unwrap().parse().unwrap();
-
-    let mut last = 0usize;
+    
+    let mut last: usize = iter.next().unwrap().parse().unwrap();
     let mut clap = 1usize;
-    for _ in 0..n {
+    for _ in 1..n {
         let x: usize = iter.next().unwrap().parse().unwrap();
-
-        if last == 0 {
-            last = x;
-        }
 
         if last + k < x {
             clap += 1;
