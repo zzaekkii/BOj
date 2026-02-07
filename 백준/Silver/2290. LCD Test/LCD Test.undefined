@@ -1,0 +1,128 @@
+use std::io::{self, Read, Write};
+
+#[repr(usize)]
+enum Dir {
+    Up,
+    LeftUp,
+    RightUp,
+    Mid,
+    LeftDown,
+    RightDown,
+    Down,
+}
+
+// 상, 좌상, 우상, 중, 좌하, 우하, 하
+const DIGIT_FILLED: [[bool; 7]; 10] = [
+    [true, true, true, false, true, true, true],     // 0
+    [false, false, true, false, false, true, false], // 1
+    [true, false, true, true, true, false, true],    // 2
+    [true, false, true, true, false, true, true],    // 3
+    [false, true, true, true, false, true, false],   // 4
+    [true, true, false, true, false, true, true],    // 5
+    [true, true, false, true, true, true, true],     // 6
+    [true, false, true, false, false, true, false],  // 7
+    [true, true, true, true, true, true, true],      // 8
+    [true, true, true, true, false, true, true],     // 9
+];
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let s: usize = iter.next().unwrap().parse().unwrap();
+    let n = iter.next().unwrap().as_bytes();
+
+    let h = 2 * s + 3;
+    let horizon = "|";
+    let vertical = "-".repeat(s);
+    let blank = " ";
+    let blanks = " ".repeat(s);
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for row in 0..h {
+        for (idx, &b) in n.iter().enumerate() {
+            let digit = (b - b'0') as usize;
+            let cur = DIGIT_FILLED[digit];
+
+            if row == 0 {
+                // 상
+                write!(
+                    out,
+                    " {} ",
+                    if cur[Dir::Up as usize] {
+                        &vertical
+                    } else {
+                        &blanks
+                    }
+                )
+                .unwrap();
+            } else if row <= s {
+                // 중상
+                write!(
+                    out,
+                    "{}{}{}",
+                    if cur[Dir::LeftUp as usize] {
+                        horizon
+                    } else {
+                        blank
+                    },
+                    blanks,
+                    if cur[Dir::RightUp as usize] {
+                        horizon
+                    } else {
+                        blank
+                    }
+                )
+                .unwrap();
+            } else if row == s + 1 {
+                // 중
+                write!(
+                    out,
+                    " {} ",
+                    if cur[Dir::Mid as usize] {
+                        &vertical
+                    } else {
+                        &blanks
+                    }
+                )
+                .unwrap();
+            } else if row < h - 1 {
+                // 중하
+                write!(
+                    out,
+                    "{}{}{}",
+                    if cur[Dir::LeftDown as usize] {
+                        horizon
+                    } else {
+                        blank
+                    },
+                    blanks,
+                    if cur[Dir::RightDown as usize] {
+                        horizon
+                    } else {
+                        blank
+                    }
+                )
+                .unwrap();
+            } else {
+                // 하
+                write!(
+                    out,
+                    " {} ",
+                    if cur[Dir::Down as usize] {
+                        &vertical
+                    } else {
+                        &blanks
+                    }
+                )
+                .unwrap();
+            }
+
+            if idx + 1 != n.len() {
+                write!(out, " ").unwrap();
+            }
+        }
+        writeln!(out).unwrap();
+    }
+}
