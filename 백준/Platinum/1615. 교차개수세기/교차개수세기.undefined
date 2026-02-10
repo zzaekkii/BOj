@@ -1,0 +1,78 @@
+use std::io::{self, Read, Write};
+
+#[inline]
+fn update(seg: &mut Vec<usize>, size: usize, idx: usize) {
+    let mut p = size + idx - 1;
+    seg[p] += 1;
+
+    while p > 1 {
+        p >>= 1;
+        seg[p] = seg[p * 2] + seg[p * 2 + 1];
+    }
+}
+
+#[inline]
+fn find_cross(
+    seg: &[usize],
+    size: usize,
+    st: usize,
+    en: usize
+) -> usize {
+    let mut left = size + st - 1;
+    let mut right = size + en - 1;
+    let mut cnt = 0usize;
+
+    while left <= right {
+        if left & 1 == 1 {
+            cnt += seg[left];
+            left += 1;
+        }
+
+        if right & 1 == 0 {
+            cnt += seg[right];
+            right -= 1;
+        }
+
+        left >>= 1;
+        right >>= 1;
+    }
+
+    cnt
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut adj = vec![Vec::<usize>::new(); n + 1];
+
+    for _ in 0..m {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+        adj[a].push(b);
+    }
+
+    let mut size = 1usize;
+    while size < n {
+        size <<= 1;
+    }
+
+    let mut seg = vec![0usize; size * 2];
+    let mut ans = 0usize;
+
+    for a in 1..=n {
+        for &b in &adj[a] {
+            ans += find_cross(&mut seg, size, b + 1, n)
+        }
+
+        for &b in &adj[a] {
+            update(&mut seg, size, b);
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{ans}").unwrap();
+}
