@@ -1,0 +1,95 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+    vec,
+};
+
+const ROOT: usize = 1;
+const LOG: usize = 14;
+
+#[inline]
+fn get_lca(mut a: usize, mut b: usize, depth: &[usize], parent: &[Vec<usize>]) -> usize {
+    if depth[b] < depth[a] {
+        std::mem::swap(&mut a, &mut b);
+    }
+
+    let diff = depth[b] - depth[a];
+    for k in 0..LOG {
+        if diff & (1 << k) != 0 {
+            b = parent[k][b];
+        }
+    }
+
+    if a == b {
+        return a;
+    }
+
+    for k in (0..LOG).rev() {
+        if parent[k][a] != parent[k][b] {
+            a = parent[k][a];
+            b = parent[k][b];
+        }
+    }
+
+    parent[0][a]
+}
+
+#[inline]
+fn get_dist(a: usize, b: usize, depth: &[usize], parent: &[Vec<usize>]) -> usize {
+    let lca = get_lca(a, b, depth, parent);
+    depth[a] + depth[b] - 2 * depth[lca]
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut graph = vec![Vec::<usize>::new(); n + 1];
+
+    for _ in 0..n - 1 {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+
+        graph[a].push(b);
+        graph[b].push(a);
+    }
+
+    let mut depth = vec![0usize; n + 1];
+    let mut parent = vec![vec![0usize; n + 1]; LOG];
+
+    let mut q = VecDeque::new();
+    q.push_back(ROOT);
+
+    while let Some(cur) = q.pop_front() {
+        for &nxt in &graph[cur] {
+            if parent[0][cur] == nxt {
+                continue;
+            }
+
+            depth[nxt] = depth[cur] + 1;
+            parent[0][nxt] = cur;
+            q.push_back(nxt);
+        }
+    }
+
+    for k in 1..LOG {
+        for i in 1..=n {
+            let p = parent[k - 1][i];
+            parent[k][i] = parent[k - 1][p];
+        }
+    }
+
+    let m: usize = iter.next().unwrap().parse().unwrap();
+    let mut cur = ROOT;
+    let mut ans = 0usize;
+    for _ in 0..m {
+        let x: usize = iter.next().unwrap().parse().unwrap();
+        ans += get_dist(cur, x, &depth, &parent);
+        cur = x;
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{ans}").unwrap();
+}
