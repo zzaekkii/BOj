@@ -1,0 +1,90 @@
+use std::io::{self, Read, Write};
+
+#[inline]
+fn merge(left: (usize, usize), right: (usize, usize)) -> (usize, usize) {
+    (left.0.min(right.0), left.1.max(right.1))
+}
+
+#[inline]
+fn update(seg: &mut [(usize, usize)], size: usize, idx: usize, val: usize) {
+    let mut p = size + idx;
+    seg[p] = (val, val);
+
+    while p > 1 {
+        p >>= 1;
+        seg[p] = merge(seg[p * 2], seg[p * 2 + 1]);
+    }
+}
+
+#[inline]
+fn query(seg: &[(usize, usize)], size: usize, st: usize, en: usize) -> (usize, usize) {
+    let mut left = size + st;
+    let mut right = size + en;
+    let mut res = (usize::MAX, 0);
+
+    while left <= right {
+        if left & 1 == 1 {
+            res = merge(res, seg[left]);
+            left += 1;
+        }
+
+        if right & 1 == 0 {
+            res = merge(res, seg[right]);
+            right -= 1;
+        }
+
+        left >>= 1;
+        right >>= 1;
+    }
+
+    res
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let t: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..t {
+        let n: usize = iter.next().unwrap().parse().unwrap();
+        let k: usize = iter.next().unwrap().parse().unwrap();
+
+        let mut size = 1usize;
+        while size < n {
+            size <<= 1;
+        }
+
+        let mut seg = vec![(usize::MAX, 0); size * 2];
+        let mut dvds: Vec<usize> = (0..n).collect();
+
+        for i in 0..n {
+            seg[size + i] = (i, i);
+        }
+
+        for i in (1..size).rev() {
+            seg[i] = merge(seg[i * 2], seg[i * 2 + 1]);
+        }
+
+        for _ in 0..k {
+            let q: usize = iter.next().unwrap().parse().unwrap();
+            let a: usize = iter.next().unwrap().parse().unwrap();
+            let b: usize = iter.next().unwrap().parse().unwrap();
+
+            match q {
+                0 => {
+                    update(&mut seg, size, a, dvds[b]);
+                    update(&mut seg, size, b, dvds[a]);
+                    dvds.swap(a, b);
+                }
+                1 => {
+                    let (mn, mx) = query(&mut seg, size, a, b);
+                    writeln!(out, "{}", if mn == a && mx == b { "YES" } else { "NO" }).unwrap();
+                }
+                _ => unreachable!(),
+            }
+        }
+    }
+}
