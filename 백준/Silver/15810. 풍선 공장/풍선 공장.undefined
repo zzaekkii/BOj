@@ -1,0 +1,45 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: u64 = iter.next().unwrap().parse().unwrap();
+    let mut staffs = Vec::<u64>::with_capacity(n);
+
+    for _ in 0..n {
+        let staff: u64 = iter.next().unwrap().parse().unwrap();
+        staffs.push(staff);
+    }
+
+    staffs.sort();
+
+    let mut st = 0u64;
+    let mut en = 1_000_000_000_000u64;
+    let mut cnt = 0u64;
+    let mut ans = 0u64;
+    while st <= en {
+        let mid = (st + en) / 2;
+        cnt = 0;
+
+        for &s in &staffs {
+            if cnt >= m {
+                break;
+            }
+
+            cnt += mid / s;
+        }
+
+        if cnt >= m {
+            ans = mid;
+            en = mid - 1;
+        } else {
+            st = mid + 1;
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{ans}").unwrap();
+}
