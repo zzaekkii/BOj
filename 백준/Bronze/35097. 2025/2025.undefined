@@ -1,0 +1,17 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for line in input.lines() {
+        let n: usize = line.trim().parse().unwrap();
+        if n == 0 {
+            break;
+        }
+
+        let sum = n * (n + 1) / 2;
+        writeln!(out, "{}", sum * sum).unwrap();
+    }
+}
