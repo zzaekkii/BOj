@@ -1,0 +1,15 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+
+    let mut nums: Vec<u64> = input
+        .split_whitespace()
+        .map(|x| x.parse().unwrap())
+        .collect();
+
+    nums.sort_unstable();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", nums[1]).unwrap();
+}
