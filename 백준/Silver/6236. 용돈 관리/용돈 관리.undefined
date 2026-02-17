@@ -1,0 +1,51 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: u32 = iter.next().unwrap().parse().unwrap();
+    let mut amounts = Vec::<u32>::with_capacity(n);
+    let mut max_price = 0u32;
+
+    for _ in 0..n {
+        let amount: u32 = iter.next().unwrap().parse().unwrap();
+        max_price = max_price.max(amount);
+        amounts.push(amount);
+    }
+
+    let mut st = max_price;
+    let mut en = 100_000 * 10_000u32;
+    let mut ans = en;
+
+    while st <= en {
+        let mid = (st + en) / 2;
+
+        let mut cnt = 1u32;
+        let mut money = mid;
+
+        for &a in &amounts {
+            if money < a {
+                cnt += 1;
+                money = mid;
+            }
+            money -= a;
+        }
+
+        if cnt <= m {
+            ans = mid;
+
+            if mid == 0 {
+                break;
+            }
+            en = mid - 1;
+        } else {
+            st = mid + 1;
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{ans}").unwrap();
+}
