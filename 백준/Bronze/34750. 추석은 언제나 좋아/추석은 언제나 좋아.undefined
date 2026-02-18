@@ -1,0 +1,25 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let money: usize = iter.next().unwrap().parse().unwrap();
+    let mut parent = 0usize;
+    let mut jamin = 0usize;
+
+    if 1_000_000 <= money {
+        parent = money / 5;
+    } else if 500_000 <= money {
+        parent = money / 20 * 3;
+    } else if 100_000 <= money {
+        parent = money / 10;
+    } else {
+        parent = money / 20;
+    }
+    jamin = money - parent;
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{} {}", parent, jamin).unwrap();
+}
