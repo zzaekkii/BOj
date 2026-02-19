@@ -1,0 +1,46 @@
+use std::io::{self, Read, Write};
+
+const MAX: usize = 1_000;
+const MOD: usize = 1_000_000_009;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let mut dp = vec![vec![0usize; MAX + 1]; MAX + 1];
+    dp[0][0] = 1;
+
+    for i in 1..=MAX {
+        for j in 1..=i {
+            if 1 <= i {
+                dp[i][j] = (dp[i][j] + dp[i - 1][j - 1]) % MOD;
+            }
+            if 2 <= i {
+                dp[i][j] = (dp[i][j] + dp[i - 2][j - 1]) % MOD;
+            }
+            if 3 <= i {
+                dp[i][j] = (dp[i][j] + dp[i - 3][j - 1]) % MOD;
+            }
+        }
+    }
+
+    let mut result = vec![vec![0usize; MAX + 1]; MAX + 1];
+    for i in 1..=MAX {
+        let mut sum = 0usize;
+        for j in 1..=MAX {
+            sum = (sum + dp[i][j]) % MOD;
+            result[i][j] = sum;
+        }
+    }
+
+    let t: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..t {
+        let n: usize = iter.next().unwrap().parse().unwrap();
+        let m: usize = iter.next().unwrap().parse().unwrap();
+
+        writeln!(out, "{}", result[n][m]).unwrap();
+    }
+}
