@@ -1,19 +1,19 @@
 use std::io::{self, Read, Write};
 
 const MAX: usize = 1_000;
-const MOD: usize = 1_000_000_009;
+const MOD: u32 = 1_000_000_009;
 
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
     let mut iter = input.split_ascii_whitespace();
 
-    let mut dp = vec![vec![0usize; MAX + 1]; MAX + 1];
+    let mut dp = vec![vec![0u32; MAX + 1]; MAX + 1];
     dp[0][0] = 1;
 
     for i in 1..=MAX {
         for j in 1..=i {
-            let mut value = 0usize;
+            let mut value = 0u32;
 
             value += dp[i - 1][j - 1];
             if value >= MOD {
@@ -38,7 +38,7 @@ fn main() {
     }
 
     for i in 1..=MAX {
-        let mut sum = 0usize;
+        let mut sum = 0u32;
         for j in 1..=MAX {
             sum += dp[i][j];
 
