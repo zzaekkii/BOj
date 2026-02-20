@@ -1,0 +1,40 @@
+use std::io::{self, Read, Write};
+
+fn is_knight(a: (i32, i32), b: (i32, i32)) -> bool {
+    let dx = (a.0 - b.0).abs();
+    let dy = (a.1 - b.1).abs();
+
+    (dx == 1 && dy == 2) || (dx == 2 && dy == 1)
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let mut visited = vec![vec![false; 6]; 6];
+    let mut path = Vec::<(i32, i32)>::with_capacity(36);
+    let mut valid = true;
+
+    for _ in 0..36 {
+        let s = iter.next().unwrap().as_bytes();
+        let x = (s[0] - b'A') as usize;
+        let y = (s[1] - b'1') as usize;
+
+        if visited[x][y] {
+            valid = false;
+        }
+
+        visited[x][y] = true;
+        path.push((x as i32, y as i32));
+    }
+
+    for i in 0..36 {
+        if !is_knight(path[i], path[(i + 1) % 36]) {
+            valid = false;
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", if valid { "Valid" } else { "Invalid" }).unwrap();
+}
