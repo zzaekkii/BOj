@@ -1,0 +1,41 @@
+use std::io::{self, Read, Write};
+
+const SIZE: usize = 3;
+const RATE: usize = 3;
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let mut needs = vec![0usize; SIZE];
+    for i in 0..SIZE {
+        needs[i] = iter.next().unwrap().parse().unwrap();
+    }
+
+    let mut tickets = vec![0usize; SIZE];
+    let mut full_goms = 0usize;
+    for i in 0..SIZE {
+        tickets[i] = iter.next().unwrap().parse().unwrap();
+    }
+
+    for _ in 0..RATE {
+        for i in 0..SIZE {
+            let eatable = needs[i].min(tickets[i]);
+            tickets[i] -= eatable;
+            needs[i] -= eatable;
+            full_goms += eatable;
+        }
+
+        let mut next = vec![0usize; SIZE];
+
+        for i in 0..SIZE {
+            next[(i + 1) % SIZE] = tickets[i] / RATE;
+        }
+
+        tickets = next;
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{full_goms}").unwrap();
+}
