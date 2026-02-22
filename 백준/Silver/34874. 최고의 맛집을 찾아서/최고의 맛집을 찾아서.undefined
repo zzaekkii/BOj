@@ -1,0 +1,37 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut reviews = vec![vec![0usize; m]; n];
+    let mut maxs = vec![0usize; n];
+    for i in 0..n {
+        for j in 0..m {
+            reviews[i][j] = iter.next().unwrap().parse().unwrap();
+            maxs[i] = maxs[i].max(reviews[i][j]);
+        }
+    }
+
+    let mut ans = vec![0usize; m];
+    for restaurant in 0..m {
+        let mut cost = 0usize;
+
+        for friend in 0..n {
+            if reviews[friend][restaurant] < maxs[friend] {
+                cost += 1;
+            }
+        }
+
+        ans[restaurant] = cost;
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for a in ans {
+        write!(out, "{} ", a).unwrap();
+    }
+}
