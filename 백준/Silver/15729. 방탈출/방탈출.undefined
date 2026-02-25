@@ -1,0 +1,32 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut prev2 = 0u8;
+    let mut prev1 = 0u8;
+    let mut ans = 0usize;
+
+    for i in 0..n {
+        let light: u8 = iter.next().unwrap().as_bytes()[0] - b'0';
+
+        let cur = if i == 0 {
+            light
+        } else if i == 1 {
+            light ^ prev1
+        } else {
+            light ^ prev1 ^ prev2
+        };
+
+        ans += cur as usize;
+        prev2 = prev1;
+        prev1 = cur;
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{ans}").unwrap();
+}
