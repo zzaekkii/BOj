@@ -1,0 +1,60 @@
+use std::{
+    collections::VecDeque,
+    io::{self, Read, Write},
+};
+
+const SWN: i32 = 6;
+
+fn is_swn(friends: &[Vec<usize>], x: usize, n: usize) -> bool {
+    let mut q = VecDeque::<usize>::new();
+    let mut dist = vec![-1i32; n + 1];
+
+    dist[x] = 0;
+    q.push_back(x);
+
+    while let Some(cur) = q.pop_front() {
+        for &friend in &friends[cur] {
+            if dist[friend] == -1 {
+                q.push_back(friend);
+                dist[friend] = dist[cur] + 1;
+            }
+        }
+    }
+
+    for i in 1..=n {
+        if dist[i] == -1 || dist[i] > SWN {
+            return false;
+        }
+    }
+
+    true
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let k: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut friends = vec![Vec::<usize>::new(); n + 1];
+
+    for _ in 0..k {
+        let a: usize = iter.next().unwrap().parse().unwrap();
+        let b: usize = iter.next().unwrap().parse().unwrap();
+
+        friends[a].push(b);
+        friends[b].push(a);
+    }
+
+    let mut ans = true;
+    for x in 1..=n {
+        if !is_swn(&mut friends, x, n) {
+            ans = false;
+        }
+    }
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    writeln!(out, "{}", if ans { "Small World!" } else { "Big World!" }).unwrap();
+}
