@@ -1,0 +1,89 @@
+use std::io::{self, Read, Write};
+
+struct SegTree {
+    size: usize,
+    tree: Vec<usize>,
+}
+
+impl SegTree {
+    fn new(n: usize) -> Self {
+        let size = n.next_power_of_two();
+        SegTree {
+            size,
+            tree: vec![0usize; size * 2],
+        }
+    }
+
+    #[inline]
+    fn update(&mut self, idx: usize, val: usize) {
+        let mut p = idx + self.size - 1;
+        self.tree[p] = val;
+
+        while p > 1 {
+            p >>= 1;
+            self.tree[p] = self.tree[p * 2] + self.tree[p * 2 + 1];
+        }
+    }
+
+    #[inline]
+    fn above_dvd(&self, st: usize, en: usize) -> usize {
+        let mut left = self.size + st - 1;
+        let mut right = self.size + en - 1;
+        let mut cnt = 0usize;
+
+        while left <= right {
+            if left & 1 == 1 {
+                cnt += self.tree[left];
+                left += 1;
+            }
+
+            if right & 1 == 0 {
+                cnt += self.tree[right];
+                right -= 1;
+            }
+
+            left >>= 1;
+            right >>= 1;
+        }
+
+        cnt
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let t: usize = iter.next().unwrap().parse().unwrap();
+    let mut out = io::BufWriter::new(io::stdout().lock());
+
+    for _ in 0..t {
+        let n: usize = iter.next().unwrap().parse().unwrap();
+        let m: usize = iter.next().unwrap().parse().unwrap();
+
+        let mut seg = SegTree::new(n + m);
+        let mut position = vec![0usize; n + 1];
+
+        for i in 1..=n {
+            position[i] = m + i;
+            seg.update(m + i, 1);
+        }
+
+        let mut top = m;
+        for _ in 0..m {
+            let dvd: usize = iter.next().unwrap().parse().unwrap();
+            let pos = position[dvd];
+
+            let cnt = seg.above_dvd(1, pos - 1);
+            write!(out, "{} ", cnt).unwrap();
+
+            seg.update(pos, 0);
+            seg.update(top, 1);
+            position[dvd] = top;
+            top -= 1;
+        }
+
+        writeln!(out).unwrap();
+    }
+}
