@@ -1,0 +1,27 @@
+use std::io::{self, Read, Write};
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let mut straw = Vec::<usize>::with_capacity(n);
+    for _ in 0..n {
+        let s: usize = iter.next().unwrap().parse().unwrap();
+        straw.push(s);
+    }
+
+    straw.sort_unstable_by(|a, b| b.cmp(a));
+
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for i in 0..n - 2 {
+        let [c, a, b] = [straw[i], straw[i + 1], straw[i + 2]];
+        if c < a + b {
+            writeln!(out, "{}", a + b + c).unwrap();
+            return;
+        }
+    }
+
+    writeln!(out, "-1").unwrap();
+}
