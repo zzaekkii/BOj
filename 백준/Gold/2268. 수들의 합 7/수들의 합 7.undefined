@@ -1,0 +1,88 @@
+use std::{
+    io::{self, Read, Write},
+    usize,
+};
+
+struct SegTree {
+    size: usize,
+    tree: Vec<u64>,
+}
+
+impl SegTree {
+    fn new(n: usize) -> Self {
+        let size = n.next_power_of_two();
+        SegTree {
+            size,
+            tree: vec![0u64; size * 2],
+        }
+    }
+
+    #[inline]
+    fn update(&mut self, idx: usize, val: u64) {
+        let mut p = self.size + idx - 1;
+        self.tree[p] = val;
+
+        while p > 1 {
+            p >>= 1;
+            self.tree[p] = self.tree[p * 2] + self.tree[p * 2 + 1];
+        }
+    }
+
+    #[inline]
+    fn query(&self, st: usize, en: usize) -> u64 {
+        let mut left = self.size + st - 1;
+        let mut right = self.size + en - 1;
+        let mut res = 0u64;
+
+        while left <= right {
+            if left & 1 == 1 {
+                res += self.tree[left];
+                left += 1;
+            }
+
+            if right & 1 == 0 {
+                res += self.tree[right];
+                right -= 1;
+            }
+
+            left >>= 1;
+            right >>= 1;
+        }
+
+        res
+    }
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut iter = input.split_ascii_whitespace();
+
+    let n: usize = iter.next().unwrap().parse().unwrap();
+    let m: usize = iter.next().unwrap().parse().unwrap();
+
+    let mut seg = SegTree::new(n);
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    for _ in 0..m {
+        let q: usize = iter.next().unwrap().parse().unwrap();
+
+        match q {
+            0 => {
+                let mut i: usize = iter.next().unwrap().parse().unwrap();
+                let mut j: usize = iter.next().unwrap().parse().unwrap();
+
+                if i > j {
+                    std::mem::swap(&mut i, &mut j);
+                }
+
+                writeln!(out, "{}", seg.query(i, j)).unwrap();
+            }
+            1 => {
+                let i: usize = iter.next().unwrap().parse().unwrap();
+                let v: u64 = iter.next().unwrap().parse().unwrap();
+                seg.update(i, v);
+            }
+            _ => unreachable!(),
+        }
+    }
+}
