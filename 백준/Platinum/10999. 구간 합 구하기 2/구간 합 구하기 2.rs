@@ -19,16 +19,16 @@ impl SegTree {
     }
 
     #[inline]
-    fn propagate(&mut self, node: usize, start: usize, end: usize) {
+    fn propagate(&mut self, node: usize, len: i64) {
         let val = self.lazy[node];
 
         if val == 0 {
             return;
         }
 
-        self.tree[node] += val * (end as i64 - start as i64 + 1);
+        self.tree[node] += val * len;
 
-        if start != end {
+        if node < self.size {
             self.lazy[node * 2] += val;
             self.lazy[node * 2 + 1] += val;
         }
@@ -36,15 +36,19 @@ impl SegTree {
         self.lazy[node] = 0;
     }
 
-    #[inline]
-    fn update(&mut self, idx: usize, val: i64) {
-        let mut p = self.size + idx - 1;
-        self.tree[p] = val;
-
-        while p > 1 {
-            p >>= 1;
-            self.tree[p] = self.tree[p * 2] + self.tree[p * 2 + 1];
+    fn build(&mut self, node: usize, start: usize, end: usize, arr: &[i64]) {
+        if start == end {
+            if start < arr.len() {
+                self.tree[node] = arr[start];
+            }
+            return;
         }
+
+        let mid = start + (end - start) / 2;
+        self.build(node * 2, start, mid, arr);
+        self.build(node * 2 + 1, mid + 1, end, arr);
+
+        self.tree[node] = self.tree[node * 2] + self.tree[node * 2 + 1];
     }
 
     #[inline]
@@ -57,7 +61,7 @@ impl SegTree {
         right: usize,
         val: i64,
     ) {
-        self.propagate(node, start, end);
+        self.propagate(node, (end - start + 1) as i64);
 
         if right < start || end < left {
             return;
@@ -65,11 +69,11 @@ impl SegTree {
 
         if left <= start && end <= right {
             self.lazy[node] += val;
-            self.propagate(node, start, end);
+            self.propagate(node, (end - start + 1) as i64);
             return;
         }
 
-        let mid = (start + end) / 2;
+        let mid = start + (end - start) / 2;
         self.update_range(node * 2, start, mid, left, right, val);
         self.update_range(node * 2 + 1, mid + 1, end, left, right, val);
 
@@ -78,7 +82,7 @@ impl SegTree {
 
     #[inline]
     fn query(&mut self, node: usize, start: usize, end: usize, left: usize, right: usize) -> i64 {
-        self.propagate(node, start, end);
+        self.propagate(node, (end - start + 1) as i64);
 
         if right < start || end < left {
             return 0i64;
@@ -88,11 +92,26 @@ impl SegTree {
             return self.tree[node];
         }
 
-        let mid = (start + end) / 2;
+        let mid = start + (end - start) / 2;
         let left_res = self.query(node * 2, start, mid, left, right);
         let right_res = self.query(node * 2 + 1, mid + 1, end, left, right);
 
         left_res + right_res
+    }
+
+    #[inline]
+    fn build_from(&mut self, arr: &[i64]) {
+        self.build(ROOT, ROOT, self.size, arr);
+    }
+
+    #[inline]
+    fn range_add(&mut self, l: usize, r: usize, val: i64) {
+        self.update_range(ROOT, ROOT, self.size, l, r, val);
+    }
+
+    #[inline]
+    fn range_sum(&mut self, l: usize, r: usize) -> i64 {
+        self.query(ROOT, ROOT, self.size, l, r)
     }
 }
 
@@ -106,10 +125,12 @@ fn main() {
     let k: usize = iter.next().unwrap().parse().unwrap();
 
     let mut seg = SegTree::new(n);
+    let mut arr = vec![0i64; n + 1];
     for i in 1..=n {
         let num: i64 = iter.next().unwrap().parse().unwrap();
-        seg.update(i, num);
+        arr[i] = num;
     }
+    seg.build_from(&arr);
 
     let cnt = m + k;
     let mut out = io::BufWriter::new(io::stdout().lock());
@@ -121,12 +142,12 @@ fn main() {
                 let left: usize = iter.next().unwrap().parse().unwrap();
                 let right: usize = iter.next().unwrap().parse().unwrap();
                 let val: i64 = iter.next().unwrap().parse().unwrap();
-                seg.update_range(ROOT, ROOT, seg.size, left, right, val);
+                seg.range_add(left, right, val);
             }
             2 => {
                 let left: usize = iter.next().unwrap().parse().unwrap();
                 let right: usize = iter.next().unwrap().parse().unwrap();
-                writeln!(out, "{}", seg.query(ROOT, ROOT, seg.size, left, right)).unwrap();
+                writeln!(out, "{}", seg.range_sum(left, right)).unwrap();
             }
             _ => unreachable!(),
         }
