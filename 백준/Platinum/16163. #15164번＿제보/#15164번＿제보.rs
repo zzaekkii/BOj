@@ -1,12 +1,13 @@
 use std::io::{self, Read, Write};
 
 fn manacher(s: &str) -> usize {
-    let mut t = Vec::with_capacity(s.len() * 2 + 1);
+    let bytes = s.as_bytes();
+    let mut t = Vec::with_capacity(bytes.len() * 2 + 1);
 
-    t.push('#');
-    for c in s.chars() {
+    t.push(b'#');
+    for &c in bytes {
         t.push(c);
-        t.push('#');
+        t.push(b'#');
     }
 
     let n = t.len();
@@ -19,10 +20,8 @@ fn manacher(s: &str) -> usize {
             p[i] = p[c * 2 - i].min(r - i);
         }
 
-        while i + p[i] + 1 < n 
-            && i >= p[i] + 1
-            && t[i + p[i] + 1] == t[i - p[i] - 1] {
-                p[i] += 1;
+        while i + p[i] + 1 < n && i >= p[i] + 1 && t[i + p[i] + 1] == t[i - p[i] - 1] {
+            p[i] += 1;
         }
 
         if i + p[i] > r {
