@@ -16,7 +16,7 @@ fn main() {
     }
 
     let mut stack = Vec::with_capacity(n);
-    stack.push((1usize, 0usize, 0usize)); // (현재 노드, 부모, 깊이)
+    stack.push((1usize, 0usize, 0usize)); // 현재 노드, 부모, 깊이
     let mut sum = 0usize;
 
     while let Some((cur, parent, depth)) = stack.pop() {
@@ -35,6 +35,6 @@ fn main() {
         }
     }
 
-    let mut out = io::BufWriter::new(io::stdout().lock());
+    let mut out = io::BufWriter::new(io::stdout());
     writeln!(out, "{}", if sum % 2 == 1 { "Yes" } else { "No" }).unwrap();
 }
