@@ -4,9 +4,9 @@ using namespace std;
 void dfs(
     int idx,
     int sum,
-    const int& target,
+    const int target,
     int& count,
-    vector<int>& numbers
+    const vector<int>& numbers
 ) {
     if (idx == numbers.size()) {
         if (sum == target) {
@@ -23,8 +23,7 @@ void dfs(
 int solution(vector<int> numbers, int target) {
     int answer = 0;
     
-    dfs(1, numbers[0], target, answer, numbers);
-    dfs(1, -numbers[0], target, answer, numbers);
+    dfs(0, 0, target, answer, numbers);
     
     return answer;
 }
