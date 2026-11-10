@@ -28,10 +28,7 @@ bool is_spoiler(
     const vector<vector<int>>& spoiler_ranges
 ) { 
     for (auto range : spoiler_ranges) {
-        if (range[0] <= keyword.st && keyword.st <= range[1]
-            || range[0] <= keyword.en && keyword.en <= range[1]
-            || keyword.st <= range[0] && range[0] <= keyword.en
-            || keyword.st <= range[1] && range[1] <= keyword.en) {
+        if (range[0] <= keyword.en && keyword.st <= range[1]) {
             return true;
         }
     }
